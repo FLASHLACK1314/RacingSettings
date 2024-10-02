@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/racingSettings
+    username: racingSettings
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  config:
+    name: HomeofeSportsRacingSimulatorSettings
+server:
+  port: 8080
+xutil:
+  mail:
+    default-encoding: utf-8
+    host: smtp.qiye.aliyun.com
+    username: noreplay@x-lf.cn
+    password: X+7ily20040722
+    port: 25
