@@ -8,10 +8,6 @@ spring:
     name: HomeofeSportsRacingSimulatorSettings
 server:
   port: 8080
-xutil:
-  mail:
-    default-encoding: utf-8
-    host: smtp.qiye.aliyun.com
-    username: noreplay@x-lf.cn
-    password: X+7ily20040722
-    port: 25
+
+
+
