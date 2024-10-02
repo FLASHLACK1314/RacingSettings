@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 启动类
  * @author FLASHLACK
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.flashlack.homeofesportsracingsimulatorsettings")
 public class HomeofeSportsRacingSimulatorSettingsApplication {
 
     public static void main(String[] args) {

@@ -11,7 +11,7 @@ import lombok.Data;
 @SuppressWarnings("unused")
 public class RegisterVO {
     String userEmail;
-    String userAccount;
+    String emailCode;
     String userPassword;
-    String verificationCode;
+    String nickName;
 }

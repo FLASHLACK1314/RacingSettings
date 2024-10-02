@@ -13,8 +13,7 @@ import lombok.Data;
 public class UserDO {
     String userUuid;
     String roleUuid;
-    String userAccount;
     String userPassword;
     String userEmail;
-    String userName;
+    String nickName;
 }
