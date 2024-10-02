@@ -1,6 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.RegisterVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ResultUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
+    private final AuthService authService;
     /**
      * 用户注册
      * @param getData 注册信息
@@ -29,7 +31,10 @@ public class AuthController {
     public ResponseEntity<BaseResponse<String>> userRegister(
             @RequestBody RegisterVO getData
             ) {
-
+        //检查数据
+        authService.checkRegisterData(getData);
+        //进行注册
+        authService.register(getData);
         return ResultUtil.success("注册成功", "注册成功");
     }
 

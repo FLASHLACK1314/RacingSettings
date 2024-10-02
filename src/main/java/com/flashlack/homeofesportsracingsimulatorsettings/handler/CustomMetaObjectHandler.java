@@ -20,10 +20,8 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
         log.info("正在进行插入操作的自动填充...");
         // 插入时填充创建时间
         this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
-
         // 插入时填充过期时间（当前时间 + 5 分钟）
         this.strictInsertFill(metaObject, "expireTime", LocalDateTime.class, LocalDateTime.now().plusMinutes(5));
-
         log.info("插入时自动填充完成：createTime={}, expireTime={}", LocalDateTime.now(), LocalDateTime.now().plusMinutes(5));
     }
 
