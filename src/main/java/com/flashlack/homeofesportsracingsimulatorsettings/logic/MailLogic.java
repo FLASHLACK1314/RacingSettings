@@ -41,9 +41,9 @@ public class MailLogic implements MailService {
     @Override
     public void sendMail() {
         // 创建邮件
-        String subject = "邮件标题";
-        String content = "邮件内容";
-        String to = "1550909467@qq.com";
+        String subject = "测试";
+        String content = "测试内容";
+        String to = "zlp18021547586@163.com";
         String from = "17372855625@163.com";
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setSubject(subject);
