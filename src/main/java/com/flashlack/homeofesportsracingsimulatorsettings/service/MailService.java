@@ -15,6 +15,5 @@ public interface MailService {
      * @param to 邮箱地址
      */
     void sendMailCode
-    (String to,
-     String userUuid);
+    (String to);
 }

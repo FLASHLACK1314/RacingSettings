@@ -1,58 +1,98 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.RegisterVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
+import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 /**
  * 权限逻辑
+ *
  * @author FLASHLACK
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthLogic implements AuthService {
     private final EmailCodeDAO emailCodeDAO;
+    private final UserDAO userDAO;
+
+    @Override
+    public String checkLoginData(LoginVO getData) {
+        //检查用户是否存在
+        UserDO userDO =userDAO.lambdaQuery()
+                .eq(UserDO::getUserEmail, getData.getUserEmail()).one();
+        if (userDO == null) {
+            throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
+        }
+        if (!userDO.getUserPassword().equals(getData.getUserPassword())) {
+            throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
+        }else{
+            log.info("登录成功");
+            return userDO.getUserUuid();
+        }
+    }
 
     @Override
     public void checkRegisterData(RegisterVO getData) {
-        //验证邮箱以及验证码
-        if (getData.getUserEmail() == null || getData.getUserEmail().isEmpty()) {
-            throw new RuntimeException("邮箱不能为空");
-        }
-        if (getData.getEmailCode() == null || getData.getEmailCode().isEmpty()) {
-            throw new RuntimeException("验证码不能为空");
-        }
-        if (getData.getUserPassword() == null || getData.getUserPassword().isEmpty()) {
-            throw new RuntimeException("密码不能为空");
-        }
-        if (getData.getNickName() == null || getData.getNickName().isEmpty()) {
-            throw new RuntimeException("昵称不能为空");
-        }
         //验证邮箱验证码，首先在邮箱表内查询出来，然后进行比对
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
-                .eq(EmailCodeDO::getUserEmail,getData.getUserEmail()).one();
+                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail()).one();
         if (emailCodeDO == null) {
-            throw new BusinessException("邮箱未获取验证请先获取验证码", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("请先获取验证码", ErrorCode.OPERATION_ERROR);
+        }
+        if (!(emailCodeDO.getUserUuid() == null || emailCodeDO.getUserUuid().isEmpty())) {
+            throw new BusinessException("此邮箱已经被注册", ErrorCode.OPERATION_ERROR);
         }
         if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
         }
         //进行时间校验
+        LocalDateTime now = LocalDateTime.now();
         EmailCodeDO emailNowCodeDO = new EmailCodeDO();
-        if (!emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())){
+        emailNowCodeDO.setCreateTime(now);
+        log.info("目前时间为：{}", emailNowCodeDO.getCreateTime());
+        if (!emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+        }
+        //检查昵称
+        UserDO userDO = userDAO.lambdaQuery()
+                .eq(UserDO::getNickName, getData.getNickName()).one();
+        if (userDO != null) {
+            throw new BusinessException("昵称已经被注册", ErrorCode.OPERATION_ERROR);
         }
         //可以进行注册
     }
 
     @Override
     public void register(RegisterVO getData) {
+        //进行数据交换
+        UserDO userDO = new UserDO();
+        userDO.setUserUuid(UUIDUtils.generateUuid())
+                .setRoleUuid("8b1c8df4-9b3e-4b0e-9f7b-b5b9173d1e76")
+                .setUserEmail(getData.getUserEmail())
+                .setUserPassword(getData.getUserPassword())
+                .setNickName(getData.getNickName());
         //进行注册
-
+        log.info("正在进行注册数据库操作");
+        userDAO.save(userDO);
+        EmailCodeDO emailCodeDO =new EmailCodeDO();
+        //填入邮箱表
+        emailCodeDO.setUserEmail(getData.getUserEmail())
+                .setUserUuid(userDO.getUserUuid());
+        log.info("正在邮箱更新操作");
+        log.info("用户UUID为：{}", emailCodeDO.getUserUuid());
+        emailCodeDAO.updateUserUuidByEmail(emailCodeDO);
     }
 }
