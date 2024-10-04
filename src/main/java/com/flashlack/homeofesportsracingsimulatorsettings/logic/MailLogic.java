@@ -37,6 +37,27 @@ public class MailLogic implements MailService {
         return String.format("%06d", random.nextInt(1000000));
     }
 
+    /**
+     * 发送邮箱验证码方法
+     *
+     * @param to      收件人邮箱
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     */
+    private void sendSimpleMailCode(String to, String subject, String content) {
+        // 发件人邮箱地址
+        String from = "17372855625@163.com";
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setSubject(subject);
+        mail.setText(content);
+        mail.setTo(to);
+        mail.setFrom(from);
+        // 日志记录
+        log.info("请稍等，正在发送邮件验证码至: {}", to);
+        // 发送邮件
+        javaMailSender.send(mail);
+        log.info("邮件发送成功: {}", to);
+    }
 
     @Override
     public void sendMail() {
@@ -68,15 +89,16 @@ public class MailLogic implements MailService {
         if (emailFindCodeDO != null) {
             LocalDateTime now = LocalDateTime.now();
             //检查是否可以重发
-            if(emailFindCodeDO.getCreateTime().plusMinutes(2).isBefore(now)){
+            if (!emailFindCodeDO.getCreateTime().plusMinutes(2).isBefore(now)) {
                 //发送时间延迟2分钟后依然比现在早，静止发送
                 throw new BusinessException("请勿频繁发送验证码", ErrorCode.OPERATION_ERROR);
-            }else{
+            } else {
                 //更新数据库
                 emailFindCodeDO.setEmailCode(code)
                         .setCreateTime(null)
                         .setExpireTime(null);
                 emailCodeDAO.updateEmailCodeByEmail(emailFindCodeDO);
+                sendSimpleMailCode(to, subject, content);
             }
         } else {
             //存入数据库中
@@ -84,19 +106,10 @@ public class MailLogic implements MailService {
             EmailCodeDO emailCodeDO = new EmailCodeDO();
             emailCodeDO.setUserEmail(to)
                     .setEmailCode(code);
-            log.info("存入数据库中");
+            log.info("存入邮箱验证码数据库中");
             //存入数据库
             emailCodeDAO.save(emailCodeDO);
-            String from = "17372855625@163.com";
-            log.info("请稍等正在发送邮件验证码:{}", code);
-            SimpleMailMessage mail = new SimpleMailMessage();
-            mail.setSubject(subject);
-            mail.setText(content);
-            mail.setTo(to);
-            mail.setFrom(from);
-            log.info("请稍等正在发送邮件验证码");
-            // 发送邮件
-            javaMailSender.send(mail);
+            sendSimpleMailCode(to, subject, content);
         }
     }
 

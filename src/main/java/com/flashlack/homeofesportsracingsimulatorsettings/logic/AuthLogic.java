@@ -4,7 +4,8 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.RegisterVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 权限逻辑
@@ -46,6 +48,10 @@ public class AuthLogic implements AuthService {
 
     @Override
     public void checkRegisterData(RegisterVO getData) {
+        //检查确认密码和密码是否一致
+        if (!getData.getUserPassword().equals(getData.getConfirmPassword())) {
+            throw new BusinessException("密码不一致", ErrorCode.OPERATION_ERROR);
+        }
         //验证邮箱验证码，首先在邮箱表内查询出来，然后进行比对
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
                 .eq(EmailCodeDO::getUserEmail, getData.getUserEmail()).one();
@@ -95,4 +101,45 @@ public class AuthLogic implements AuthService {
         log.info("用户UUID为：{}", emailCodeDO.getUserUuid());
         emailCodeDAO.updateUserUuidByEmail(emailCodeDO);
     }
+
+    @Override
+    public void checkAndFindPasswordData(FindPasswordVO getData) {
+        //检查确认密码和密码是否一致
+        if (!getData.getNewPassword().equals(getData.getConfirmPassword())) {
+            throw new BusinessException("密码不一致", ErrorCode.OPERATION_ERROR);
+        }
+        //验证邮箱验证码，首先在邮箱表内查询出来，然后进行比对
+        EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
+                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail()).one();
+        if (emailCodeDO == null) {
+            throw new BusinessException("此邮箱并未注册", ErrorCode.OPERATION_ERROR);
+        }
+        if (emailCodeDO.getUserUuid() == null || emailCodeDO.getUserUuid().isEmpty()) {
+            throw new BusinessException("此邮箱并未注册", ErrorCode.OPERATION_ERROR);
+        }
+        log.info("用户数据库内邮箱验证码为:{}", emailCodeDO.getEmailCode());
+        if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())) {
+            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+        }
+        //进行时间校验
+        LocalDateTime now = LocalDateTime.now();
+        EmailCodeDO emailNowCodeDO = new EmailCodeDO();
+        emailNowCodeDO.setCreateTime(now);
+        log.info("校验找回密码的目前时间为：{}", emailNowCodeDO.getCreateTime());
+        if (emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
+            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+        }
+        //可以进行修改密码
+        UserDO userDO = userDAO.lambdaQuery()
+                .eq(UserDO::getUserUuid, emailCodeDO.getUserUuid()).one();
+        if (userDO == null) {
+            throw new BusinessException("系统错误", ErrorCode.NOT_EXIST);
+        }
+        if (Objects.equals(userDO.getUserPassword(), getData.getNewPassword())){
+            throw new BusinessException("静止设置新密码和旧密码相同", ErrorCode.OPERATION_ERROR);
+        }
+        userDO.setUserPassword(getData.getNewPassword());
+        userDAO.updateUserPasswordByUuid(userDO);
+    }
+
 }

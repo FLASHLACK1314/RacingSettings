@@ -1,7 +1,8 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.RegisterVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import jakarta.validation.Valid;
 
 /**
@@ -28,4 +29,12 @@ public interface AuthService  {
      */
     void register(
             @Valid RegisterVO getData);
+
+    /**
+     * 检查并找回密码
+     * @param getData 找回密码数据
+     */
+    void checkAndFindPasswordData(
+            @Valid FindPasswordVO getData);
+
 }

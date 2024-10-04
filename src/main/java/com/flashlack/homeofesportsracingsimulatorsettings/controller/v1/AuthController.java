@@ -1,7 +1,8 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.RegisterVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;
 import com.xlf.utility.BaseResponse;
@@ -56,5 +57,17 @@ public class AuthController {
         String userUuid = authService.checkLoginData(getData);
         String token = jwtUtil.generateToken(userUuid);
         return ResultUtil.success("登录成功", token);
+    }
+    /**
+     * 用户找回修改密码
+     * @param getData 找回密码信息
+     * @return 是否找回成功
+     */
+    @PostMapping(value = "/findPassword", name = "用户找回密码")
+    public ResponseEntity<BaseResponse<String>> findPassword(
+            @Valid @RequestBody FindPasswordVO getData) {
+        //检查数据
+        authService.checkAndFindPasswordData(getData);
+        return ResultUtil.success("修改密码成功请重新登录", "修改密码成功请重新登录");
     }
 }
