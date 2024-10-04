@@ -3,9 +3,9 @@ package com.flashlack.homeofesportsracingsimulatorsettings.Interceptor;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -18,9 +18,9 @@ import java.io.IOException;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthInterceptor implements HandlerInterceptor {
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     /**
      * 请求前拦截，验证 JWT 令牌的合法性。

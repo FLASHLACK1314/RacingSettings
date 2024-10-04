@@ -46,7 +46,7 @@ public class MailLogic implements MailService {
      */
     private void sendSimpleMailCode(String to, String subject, String content) {
         // 发件人邮箱地址
-        String from = "17372855625@163.com";
+        String from = "flashlack1314@163.com";
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setSubject(subject);
         mail.setText(content);
@@ -57,23 +57,6 @@ public class MailLogic implements MailService {
         // 发送邮件
         javaMailSender.send(mail);
         log.info("邮件发送成功: {}", to);
-    }
-
-    @Override
-    public void sendMail() {
-        // 创建邮件
-        String subject = "测试";
-        String content = "测试内容";
-        String to = "zlp18021547586@163.com";
-        String from = "17372855625@163.com";
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setSubject(subject);
-        mail.setText(content);
-        mail.setTo(to);
-        mail.setFrom(from);
-        log.info("请稍等正在发送邮件");
-        // 发送邮件
-        javaMailSender.send(mail);
     }
 
 

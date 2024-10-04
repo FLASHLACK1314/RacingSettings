@@ -2,6 +2,8 @@ package com.flashlack.homeofesportsracingsimulatorsettings.until;
 
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -10,22 +12,75 @@ import java.util.UUID;
  * @author FLASHLACK
  */
 @Repository
+@SuppressWarnings("unused")
 public class UUIDUtils {
+    // 使用 Set 来存储已占用的 UUID
+    private static final Set<String> OCCUPIED_UUIDS = new HashSet<>();
+
     /**
-     * 生成UUID
+     * 生成 UUID，并检查是否已被占用
      *
-     * @return UUID
+     * @return 唯一的 UUID
      */
     public static String generateUuid() {
-        return UUID.randomUUID().toString();
+        String uuid;
+        do {
+            uuid = UUID.randomUUID().toString();
+        }
+        // 检查 UUID 是否已被占用
+        while (OCCUPIED_UUIDS.contains(uuid));
+        return uuid;
     }
 
     /**
-     * 生成无横杠UUID
+     * 生成无横杠的 UUID，并检查是否已被占用
      *
-     * @return 无横杠UUID
+     * @return 无横杠的唯一 UUID
      */
     public static String generateUuidWithoutHyphens() {
-        return UUID.randomUUID().toString().replace("-", "");
+        String uuid;
+        do {
+            uuid = UUID.randomUUID().toString().replace("-", "");
+        }
+        // 检查 UUID 是否已被占用
+        while (OCCUPIED_UUIDS.contains(uuid));
+        return uuid;
+    }
+
+    /**
+     * 手动添加一个已知的占用 UUID 到集合中
+     *
+     * @param uuid 已占用的 UUID
+     */
+    public static void addOccupiedUuid(String uuid) {
+        OCCUPIED_UUIDS.add(uuid);
+    }
+
+    /**
+     * 批量添加已知的占用 UUID 到集合中
+     *
+     * @param uuids 已占用的 UUID 集合
+     */
+    public static void addOccupiedUuids(Set<String> uuids) {
+        OCCUPIED_UUIDS.addAll(uuids);
+    }
+
+    /**
+     * 检查 UUID 是否已被占用
+     *
+     * @param uuid UUID 字符串
+     * @return 是否已被占用
+     */
+    public static boolean isOccupied(String uuid) {
+        return OCCUPIED_UUIDS.contains(uuid);
+    }
+
+    /**
+     * 获取所有已占用的 UUID 集合
+     *
+     * @return 占用的 UUID 集合
+     */
+    public static Set<String> getOccupiedUuids() {
+        return new HashSet<>(OCCUPIED_UUIDS);
     }
 }
