@@ -1,4 +1,4 @@
-package com.flashlack.homeofesportsracingsimulatorsettings.model;
+package com.flashlack.homeofesportsracingsimulatorsettings.model.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

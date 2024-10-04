@@ -14,8 +14,9 @@ import org.springframework.stereotype.Repository;
  *
  * @author FLASHLACK
  */
-@Repository
+
 @Slf4j
+@Repository
 public class EmailCodeDAO extends ServiceImpl<EmailCodeMapper, EmailCodeDO>
         implements IService<EmailCodeDO> {
     private final EmailCodeMapper emailCodeMapper;

@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;

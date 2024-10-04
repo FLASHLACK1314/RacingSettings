@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.LoginVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import jakarta.validation.Valid;
 

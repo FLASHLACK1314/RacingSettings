@@ -28,17 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MailController {
     private final MailService mailService;
 
-    /**
-     * 发送邮件测试
-     *
-     * @return 是否发送成功
-     */
-    @GetMapping(value = "/sendTest", name = "发送邮件测试")
-    public @NotNull ResponseEntity<BaseResponse<String>> sendMailTest() {
-        log.info("发送邮箱测试邮件");
-        mailService.sendMail();
-        return ResultUtil.success("测试邮箱发送成功", "测试邮箱发送成功");
-    }
 
     /**
      * 发送邮件验证码
