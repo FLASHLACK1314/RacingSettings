@@ -1,5 +1,10 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.until;
 
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
@@ -13,6 +18,8 @@ import java.util.UUID;
  */
 @Repository
 @SuppressWarnings("unused")
+@Slf4j
+@RequiredArgsConstructor
 public class UUIDUtils {
     // 使用 Set 来存储已占用的 UUID
     private static final Set<String> OCCUPIED_UUIDS = new HashSet<>();
@@ -82,5 +89,20 @@ public class UUIDUtils {
      */
     public static Set<String> getOccupiedUuids() {
         return new HashSet<>(OCCUPIED_UUIDS);
+    }
+    public static String getUuidByRequest(HttpServletRequest request) {
+        //获取用户令牌
+        String token = request.getHeader("Authorization");
+        log.info("Token :{}", token);
+        if (token == null) {
+            throw new BusinessException("无效的令牌", ErrorCode.HEADER_ERROR);
+        }
+        JwtUtil jwtUtil = new JwtUtil();
+        //解析Token
+        String userUuid = jwtUtil.getUserUuidFromToken(token);
+        if (userUuid == null) {
+            throw new BusinessException("无效的令牌", ErrorCode.HEADER_ERROR);
+        }
+        return userUuid;
     }
 }
