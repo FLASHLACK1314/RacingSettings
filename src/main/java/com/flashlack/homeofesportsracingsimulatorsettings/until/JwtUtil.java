@@ -1,7 +1,10 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.until;
 
+import com.xlf.utility.ErrorCode;
+import com.xlf.utility.exception.BusinessException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -13,6 +16,7 @@ import java.util.Date;
  * @author FLASHLACK
  */
 @Component
+@Slf4j
 public class JwtUtil {
     // 定义 JWT 的过期时间（1小时）
     private static final long EXPIRATION_TIME = 60 * 60 * 1000;
@@ -46,7 +50,7 @@ public class JwtUtil {
      * @return 解析出的用户名
      */
     public  String getUserUuidFromToken(String token) {
-        return parseToken(token).getBody().getSubject();
+         return parseToken(token).getBody().getSubject();
     }
 
     /**
@@ -67,17 +71,38 @@ public class JwtUtil {
     }
 
     /**
-     * 解析 JWT 令牌
+     * 解析并验证 JWT 令牌
      *
      * @param token JWT 令牌
-     * @return 解析后的 JWS（带签名的 JWT）
+     * @return 解析后的 JWS（包含 JWT 的 Claims）
      */
-    private Jws<Claims> parseToken(String token) {
-        return Jwts.parserBuilder()
-                // 设置密钥
-                .setSigningKey(SECRET_KEY)
-                .build()
-                // 解析 JWT
-                .parseClaimsJws(token);
+    public Jws<Claims> parseToken(String token) {
+        try {
+            // 解析 JWT 并返回 Jws 对象
+            return Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            // 捕获令牌过期异常
+            log.error("JWT 令牌已过期：{}", e.getMessage());
+            throw new BusinessException("令牌已过期，请重新登录。", ErrorCode.HEADER_ERROR);
+        } catch (MalformedJwtException e) {
+            // 捕获令牌格式不正确异常
+            log.error("JWT 格式不正确：{}", e.getMessage());
+            throw new BusinessException("无效的令牌格式。",ErrorCode.HEADER_ERROR);
+        } catch (UnsupportedJwtException e) {
+            // 捕获不支持的 JWT 异常
+            log.error("JWT 令牌使用了不支持的算法：{}", e.getMessage());
+            throw new BusinessException("令牌使用了不支持的算法。",ErrorCode.HEADER_ERROR);
+        } catch (IllegalArgumentException e) {
+            // 捕获非法参数异常
+            log.error("JWT 令牌参数异常：{}", e.getMessage());
+            throw new BusinessException("非法的令牌参数。",ErrorCode.HEADER_ERROR);
+        } catch (JwtException e) {
+            // 捕获其他 JWT 异常（如 SecurityException 等）
+            log.error("JWT 令牌解析失败：{}", e.getMessage());
+            throw new BusinessException("令牌解析失败。",ErrorCode.HEADER_ERROR);
+        }
     }
 }

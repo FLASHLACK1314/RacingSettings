@@ -10,6 +10,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordV
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
+import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
@@ -32,6 +33,7 @@ public class AuthLogic implements AuthService {
     private final EmailCodeDAO emailCodeDAO;
     private final UserDAO userDAO;
     private final SystemConstantsDAO systemConstantsDAO;
+    private final RedisService redisService;
 
     @Override
     public String checkLoginData(LoginVO getData) {
@@ -143,6 +145,9 @@ public class AuthLogic implements AuthService {
         }
         userDO.setUserPassword(getData.getNewPassword());
         userDAO.updateUserPasswordByUuid(userDO);
+        //删除缓存中的Token
+        log.info("正在删除缓存中的Token");
+        redisService.deleteTokenFromRedis(userDO.getUserUuid());
     }
 
 }

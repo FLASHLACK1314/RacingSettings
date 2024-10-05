@@ -4,6 +4,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordV
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
+import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ResultUtil;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/auth")
 public class AuthController {
     private final AuthService authService;
+    private final RedisService redisService;
     private final JwtUtil jwtUtil;
 
     /**
@@ -56,6 +58,8 @@ public class AuthController {
         //检查数据
         String userUuid = authService.checkLoginData(getData);
         String token = jwtUtil.generateToken(userUuid);
+        //存入Redis
+        redisService.saveTokenToRedis(userUuid, token);
         return ResultUtil.success("登录成功", token);
     }
     /**
