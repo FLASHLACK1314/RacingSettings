@@ -46,7 +46,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         tableSqlMap.put("settings_track", "templates/settings_track.sql");
         tableSqlMap.put("settings_game_car_track", "templates/settings_game_car_track.sql");
         tableSqlMap.put("acc_setups", "templates/acc_setups.sql");
-        tableSqlMap.put("f1_setups","templates/f1_setups.sql");
+        tableSqlMap.put("f1_setups", "templates/f1_setups.sql");
         tableSqlMap.put("system_constants", "templates/system_constants.sql");
     }
 

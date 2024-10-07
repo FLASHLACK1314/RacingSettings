@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class MailLogic implements MailService {
      * @param subject 邮件主题
      * @param content 邮件内容
      */
-    private void sendSimpleMailCode(String to, String subject, String content) {
+    public void sendSimpleMailCode(String to, String subject, String content) {
         // 发件人邮箱地址
         String from = "flashlack1314@163.com";
         SimpleMailMessage mail = new SimpleMailMessage();
@@ -59,7 +60,7 @@ public class MailLogic implements MailService {
         log.info("邮件发送成功: {}", to);
     }
 
-
+    @Async
     @Override
     public void sendMailCode(String to) {
         // 创建邮件
@@ -69,17 +70,15 @@ public class MailLogic implements MailService {
         //检查用户邮箱是否存在
         EmailCodeDO emailFindCodeDO = emailCodeDAO.lambdaQuery()
                 .eq(EmailCodeDO::getUserEmail, to).one();
+        LocalDateTime now = LocalDateTime.now();
         if (emailFindCodeDO != null) {
-            LocalDateTime now = LocalDateTime.now();
             //检查是否可以重发
             if (!emailFindCodeDO.getCreateTime().plusMinutes(2).isBefore(now)) {
                 //发送时间延迟2分钟后依然比现在早，静止发送
                 throw new BusinessException("请勿频繁发送验证码", ErrorCode.OPERATION_ERROR);
             } else {
                 //更新数据库
-                emailFindCodeDO.setEmailCode(code)
-                        .setCreateTime(null)
-                        .setExpireTime(null);
+                emailFindCodeDO.setEmailCode(code);
                 emailCodeDAO.updateEmailCodeByEmail(emailFindCodeDO);
                 sendSimpleMailCode(to, subject, content);
             }

@@ -8,6 +8,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis 配置类
+ *
  * @author FLASHLACK
  */
 @Configuration

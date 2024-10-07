@@ -11,9 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 邮件控制器
@@ -32,19 +30,19 @@ public class MailController {
     /**
      * 发送邮件验证码
      *
-     * @param to 邮箱地址
+     * @param email 邮箱地址
      * @return 是否发送成功
      */
     @GetMapping(value = "/sendEmailCode", name = "发送邮件验证码")
     public @NotNull ResponseEntity<BaseResponse<String>> sendEmailCode(
-            @RequestBody String to
+            @RequestParam("email") String email
     ) {
         //检查邮箱是否符合规范
-        if (!to.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
+        if (!email.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
             throw new BusinessException("邮箱格式错误", ErrorCode.PARAMETER_ERROR);
         }
         log.info("发送邮箱验证码");
-        mailService.sendMailCode(to);
+        mailService.sendMailCode(email);
         return ResultUtil.success("邮箱验证码发送成功", "邮箱验证码发送成功");
     }
 }
