@@ -90,6 +90,12 @@ public class UUIDUtils {
     public static Set<String> getOccupiedUuids() {
         return new HashSet<>(OCCUPIED_UUIDS);
     }
+
+    /**
+     * 根据请求头获取用户 UUID
+     * @param request 请求头
+     * @return 用户UUID
+     */
     public static String getUuidByRequest(HttpServletRequest request) {
         //获取用户令牌
         String token = request.getHeader("Authorization");
