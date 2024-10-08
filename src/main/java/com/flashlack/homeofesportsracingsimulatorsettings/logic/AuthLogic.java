@@ -1,10 +1,9 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.dao.SystemConstantsDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.SystemConstantsDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
@@ -32,7 +31,6 @@ import java.util.Objects;
 public class AuthLogic implements AuthService {
     private final EmailCodeDAO emailCodeDAO;
     private final UserDAO userDAO;
-    private final SystemConstantsDAO systemConstantsDAO;
     private final RedisService redisService;
 
     @Override
@@ -91,7 +89,7 @@ public class AuthLogic implements AuthService {
         //进行数据交换
         UserDO userDO = new UserDO();
         userDO.setUserUuid(UUIDUtils.generateUuid())
-                .setRoleUuid(systemConstantsDAO.lambdaQuery().eq(SystemConstantsDO::getKey, "USER_ROLE_UUID").one().getValue())
+                .setRoleUuid(UUIDConstants.ADMIN_ROLE_UUID)
                 .setUserEmail(getData.getUserEmail())
                 .setUserPassword(getData.getUserPassword())
                 .setNickName(getData.getNickName());

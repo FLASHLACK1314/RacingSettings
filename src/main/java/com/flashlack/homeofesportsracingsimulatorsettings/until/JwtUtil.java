@@ -102,6 +102,7 @@ public class JwtUtil {
         } catch (JwtException e) {
             // 捕获其他 JWT 异常（如 SecurityException 等）
             log.error("JWT 令牌解析失败：{}", e.getMessage());
+            log.info("Token :{}",token);
             throw new BusinessException("令牌解析失败。",ErrorCode.HEADER_ERROR);
         }
     }

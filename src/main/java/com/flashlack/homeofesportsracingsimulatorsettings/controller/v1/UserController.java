@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
@@ -60,5 +61,22 @@ public class UserController {
         //删除Token
         redisService.deleteTokenFromRedis(userUuid);
         return ResultUtil.success("修改密码成功");
+    }
+    /**
+     * 用户修改昵称
+     *
+     * @param request 请求
+     * @param nickName 修改昵称数据VO
+     * @return 是否修改成功
+     */
+    @PostMapping(value = "/userChangeNickName", name = "用户修改昵称")
+    public ResponseEntity<BaseResponse<Void>> userChangeNickName(
+            HttpServletRequest request,
+            @RequestBody ChangeNickNameVO nickName
+            ) {
+        String userUuid = UUIDUtils.getUuidByRequest(request);
+        log.info("用户修改昵称");
+        userService.changeNickName(userUuid, nickName);
+        return ResultUtil.success("修改昵称成功");
     }
 }

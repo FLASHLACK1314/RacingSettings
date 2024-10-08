@@ -4,6 +4,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
@@ -70,5 +71,17 @@ public class UserLogic implements UserService {
         userDO.setUserPassword(getData.getNewPassword());
         //进行密码修改
         userDAO.updateUserPasswordByUuid(userDO);
+    }
+
+    @Override
+    public void changeNickName(String userUuid, ChangeNickNameVO nickName) {
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
+        if (userDO == null){
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        userDO.setNickName(nickName.getNickName());
+        log.info("数据库修改昵称为：{}", nickName.getNickName());
+        userDAO.lambdaUpdate().eq(UserDO::getUserUuid, userUuid)
+                .set(UserDO::getNickName, nickName.getNickName()).update();
     }
 }
