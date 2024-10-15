@@ -60,24 +60,6 @@ public class InitializerController {
         log.info("已占用的管理员角色 UUID: {}", UUIDConstants.ADMIN_ROLE_UUID);
         UUIDUtils.addOccupiedUuid(UUIDConstants.USER_ROLE_UUID);
         log.info("已占用的普通用户角色 UUID: {}", UUIDConstants.USER_ROLE_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.GAME_ACC_UUID);
-        log.info("已占用的游戏ACC的UUID: {}", UUIDConstants.GAME_ACC_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.GAME_F124_UUID);
-        log.info("已占用的游戏F124的UUID: {}", UUIDConstants.GAME_F124_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.CAR_ACC_FERRARI296_UUID);
-        log.info("已占用的车辆ACC_FERRARI296的UUID: {}", UUIDConstants.CAR_ACC_FERRARI296_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.CAR_ACC_HGT3E2_UUID);
-        log.info("已占用的车辆ACC_HGT3E2的UUID: {}", UUIDConstants.CAR_ACC_HGT3E2_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.CAR_F124_F1_UUID);
-        log.info("已占用的车辆F124_F1的UUID: {}", UUIDConstants.CAR_F124_F1_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.TRACK_ACC_SPA_UUID);
-        log.info("已占用的赛道ACC_SPA赛道UUID: {}", UUIDConstants.TRACK_ACC_SPA_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.TRACK_ACC_MONZA_UUID);
-        log.info("已占用的赛道ACC_MONZA赛道UUID: {}", UUIDConstants.TRACK_ACC_MONZA_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.TRACK_F124_SPA_UUID);
-        log.info("已占用的赛道F124_SPA赛道UUID: {}", UUIDConstants.TRACK_F124_SPA_UUID);
-        UUIDUtils.addOccupiedUuid(UUIDConstants.TRACK_F124_MONZA_UUID);
-        log.info("已占用的赛道F124_MONZA赛道UUID: {}", UUIDConstants.TRACK_F124_MONZA_UUID);
         // 插入管理员角色
         insertRole(UUIDConstants.ADMIN_ROLE_UUID, "管理员", "ALL_PERMISSIONS");
         // 插入普通用户角色
@@ -138,6 +120,8 @@ public class InitializerController {
      */
     private void insertGame(String gameUuid, String gameName){
         try {
+            UUIDUtils.addOccupiedUuid(gameUuid);
+            log.info("已占用的游戏UUID为:{}", gameUuid);
             String sql = "INSERT INTO settings_game (game_uuid,game_name)"+
                     "VALUES (?, ?)";
             jdbcTemplate.update(sql, gameUuid, gameName);
@@ -154,6 +138,8 @@ public class InitializerController {
      */
     private void insertCar(String carUuid,String carName){
         try {
+            UUIDUtils.addOccupiedUuid(carUuid);
+            log.info("已占用的车辆UUID为:{}", carUuid);
             String sql = "INSERT INTO settings_car (car_uuid,car_name)"+
                     "VALUES (?, ?)";
             jdbcTemplate.update(sql, carUuid, carName);
@@ -170,6 +156,8 @@ public class InitializerController {
      */
     private void insertTrack(String trackUuid,String trackName){
         try {
+            UUIDUtils.addOccupiedUuid(trackUuid);
+            log.info("已占用的赛道UUID为:{}", trackUuid);
             String sql = "INSERT INTO settings_track (track_uuid,track_name)"+
                     "VALUES (?, ?)";
             jdbcTemplate.update(sql, trackUuid, trackName);

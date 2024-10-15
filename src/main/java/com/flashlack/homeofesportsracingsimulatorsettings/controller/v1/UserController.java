@@ -79,4 +79,19 @@ public class UserController {
         userService.changeNickName(userUuid, nickName);
         return ResultUtil.success("修改昵称成功");
     }
+    /**
+     * 用户登出
+     * @param request 请求
+     * @return 是否登出成功
+     */
+    @DeleteMapping(value = "/userLogout",name = "用户登出")
+    public ResponseEntity<BaseResponse<Void>> userLogout(
+           HttpServletRequest request
+            ){
+        String userUuid = UUIDUtils.getUuidByRequest(request);
+        log.info("用户登出");
+        //删除Token
+        redisService.deleteTokenFromRedis(userUuid);
+        return ResultUtil.success("登出成功");
+    }
 }
