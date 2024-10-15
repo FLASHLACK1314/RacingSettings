@@ -7,7 +7,9 @@ import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.BaseResponse;
+import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
+import com.xlf.utility.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,9 @@ public class UserController {
             HttpServletRequest request
     ) {
         String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
         UserInformationVO userInformationVO = userService.getUserInformation(userUuid);
         log.info("获取用户信息");
         return ResultUtil.success("获取用户信息成功", userInformationVO);
@@ -56,16 +61,20 @@ public class UserController {
             @RequestBody ChangePasswordVO getData
     ) {
         String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
         log.info("用户修改密码");
         userService.changePassword(userUuid, getData);
         //删除Token
         redisService.deleteTokenFromRedis(userUuid);
         return ResultUtil.success("修改密码成功");
     }
+
     /**
      * 用户修改昵称
      *
-     * @param request 请求
+     * @param request  请求
      * @param nickName 修改昵称数据VO
      * @return 是否修改成功
      */
@@ -73,22 +82,30 @@ public class UserController {
     public ResponseEntity<BaseResponse<Void>> userChangeNickName(
             HttpServletRequest request,
             @RequestBody ChangeNickNameVO nickName
-            ) {
+    ) {
         String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
         log.info("用户修改昵称");
         userService.changeNickName(userUuid, nickName);
         return ResultUtil.success("修改昵称成功");
     }
+
     /**
      * 用户登出
+     *
      * @param request 请求
      * @return 是否登出成功
      */
-    @DeleteMapping(value = "/userLogout",name = "用户登出")
+    @DeleteMapping(value = "/userLogout", name = "用户登出")
     public ResponseEntity<BaseResponse<Void>> userLogout(
-           HttpServletRequest request
-            ){
+            HttpServletRequest request
+    ) {
         String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
         log.info("用户登出");
         //删除Token
         redisService.deleteTokenFromRedis(userUuid);

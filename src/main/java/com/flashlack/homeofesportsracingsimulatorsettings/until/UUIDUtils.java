@@ -93,6 +93,7 @@ public class UUIDUtils {
 
     /**
      * 根据请求头获取用户 UUID
+     *
      * @param request 请求头
      * @return 用户UUID
      */
@@ -109,6 +110,7 @@ public class UUIDUtils {
         if (userUuid == null) {
             throw new BusinessException("无效的令牌", ErrorCode.HEADER_ERROR);
         }
+        log.info("用户UUID :{}", userUuid);
         return userUuid;
     }
 }
