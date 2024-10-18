@@ -36,4 +36,11 @@ public class UserDAO extends ServiceImpl<UserMapper, UserDO>
                 .set(UserDO::getUserPassword, userDO.getUserPassword());
         userMapper.update(null, updateWrapper);
     }
+
+    public void updateUserEmailByUuid(UserDO userDO) {
+        this.lambdaUpdate().eq(UserDO::getUserUuid, userDO.getUserUuid())
+                .set(UserDO::getUserEmail, userDO.getUserEmail())
+                .update();
+        log.info("更新用户邮箱中");
+    }
 }

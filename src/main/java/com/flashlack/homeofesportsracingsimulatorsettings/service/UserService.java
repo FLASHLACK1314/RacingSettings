@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
@@ -37,4 +38,22 @@ public interface UserService {
     void changeNickName(
             String userUuid,
             ChangeNickNameVO nickName);
+
+    /**
+     * 检查邮箱
+     * @param userUuid 用户UUID
+     * @param getDate 修改邮箱VO
+     */
+    void checkEmail(
+            String userUuid,
+            ChangeEmailVO getDate);
+
+    /**
+     * 修改邮箱
+     * @param userUuid 用户UUID
+     * @param getDate 修改邮箱VO
+     */
+    void changeEmail(
+            String userUuid,
+            ChangeEmailVO getDate);
 }

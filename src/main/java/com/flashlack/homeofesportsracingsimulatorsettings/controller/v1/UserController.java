@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
@@ -46,6 +47,27 @@ public class UserController {
         UserInformationVO userInformationVO = userService.getUserInformation(userUuid);
         log.info("获取用户信息");
         return ResultUtil.success("获取用户信息成功", userInformationVO);
+    }
+
+    /**
+     * 用户修改邮箱
+     * @param request 请求
+     * @param getData 修改邮箱数据VO
+     * @return 是否修改成功
+     */
+    @PostMapping(value = "/userChangeEmail", name = "用户修改邮箱")
+    public ResponseEntity<BaseResponse<Void>> userChangeEmail(
+            HttpServletRequest request,
+            @RequestBody ChangeEmailVO getData
+    ) {
+        String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
+        log.info("用户修改邮箱");
+        userService.checkEmail(userUuid, getData);
+        userService.changeEmail(userUuid, getData);
+        return ResultUtil.success("修改邮箱成功");
     }
 
     /**
