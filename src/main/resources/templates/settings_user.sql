@@ -9,7 +9,7 @@ create table settings_user
             references settings_role
             on update restrict on delete restrict,
     user_email    varchar(36) not null,
-    user_password varchar(36) not null,
+    user_password varchar(100) not null,
     nick_name     varchar(36) not null
 );
 

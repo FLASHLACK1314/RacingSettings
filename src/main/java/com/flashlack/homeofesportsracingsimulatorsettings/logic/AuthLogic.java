@@ -13,6 +13,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class AuthLogic implements AuthService {
         if (userDO == null) {
             throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
         }
-        if (!userDO.getUserPassword().equals(getData.getUserPassword())) {
+        if (!PasswordUtil.verify(getData.getUserPassword(), userDO.getUserPassword())) {
             throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
         } else {
             log.info("登录成功");
@@ -91,7 +92,7 @@ public class AuthLogic implements AuthService {
         userDO.setUserUuid(UUIDUtils.generateUuid())
                 .setRoleUuid(UUIDConstants.ADMIN_ROLE_UUID)
                 .setUserEmail(getData.getUserEmail())
-                .setUserPassword(getData.getUserPassword())
+                .setUserPassword(PasswordUtil.encrypt(getData.getUserPassword()))
                 .setNickName(getData.getNickName());
         //进行注册
         log.info("正在进行注册数据库操作");

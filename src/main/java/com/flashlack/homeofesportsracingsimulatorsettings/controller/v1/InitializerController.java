@@ -4,6 +4,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ResultUtil;
+import com.xlf.utility.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +93,7 @@ public class InitializerController {
         log.info("已占用的管理员UUID为:{}", adminUserUuid);
         String sql = "INSERT INTO settings_user (user_uuid, role_uuid,user_email, user_password, nick_name) " +
                 "VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, adminUserUuid, UUIDConstants.ADMIN_ROLE_UUID, "flashlack1314@163.com", "qwer1234", "管理员用户示例");
+        jdbcTemplate.update(sql, adminUserUuid, UUIDConstants.ADMIN_ROLE_UUID, "flashlack1314@163.com", PasswordUtil.encrypt("qwer1234"), "管理员用户示例");
         log.info("成功插入管理员用户：UUID = {}, 别名为 = {}, 邮箱 = {}，密码 = {}", adminUserUuid, "管理员用户示例", "flashlack1314@163.com", "qwer1234");
     }
     /**
