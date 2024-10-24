@@ -50,7 +50,8 @@ public class JwtUtil {
      * @return 解析出的用户名
      */
     public  String getUserUuidFromToken(String token) {
-         return parseToken(token).getBody().getSubject();
+
+        return parseToken(token).getBody().getSubject();
     }
 
     /**

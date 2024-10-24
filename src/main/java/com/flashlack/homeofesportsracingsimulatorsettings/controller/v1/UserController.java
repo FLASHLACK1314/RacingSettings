@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("v1/user")
+@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
     private final RedisService redisService;

@@ -11,6 +11,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformati
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
+import com.xlf.utility.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,21 +41,25 @@ public class UserLogic implements UserService {
 
     @Override
     public void changePassword(String userUuid, ChangePasswordVO getData) {
-        //检查邮箱验证码
+        //检查用户是否存在
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
-        if (userDO == null){
+        if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
+        //对于用户邮箱验证
+        if (!userDO.getUserEmail().equals(getData.getUserEmail())) {
+            throw new BusinessException("邮箱错误", ErrorCode.BODY_ERROR);
+        }
         //对于旧密码验证
-        if (!userDO.getUserPassword().equals(getData.getOldPassword())){
+        if (!PasswordUtil.verify(getData.getOldPassword(), userDO.getUserPassword())) {
             throw new BusinessException("旧密码错误", ErrorCode.BODY_ERROR);
         }
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
                 .eq(EmailCodeDO::getUserEmail, userDO.getUserEmail()).one();
-        if (emailCodeDO == null){
+        if (emailCodeDO == null) {
             throw new BusinessException("邮箱验证码不存在", ErrorCode.HEADER_ERROR);
         }
-        if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())){
+        if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.BODY_ERROR);
         }
         //进行时间校验
@@ -66,10 +71,10 @@ public class UserLogic implements UserService {
             throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
         }
         //进行密码确认
-        if (!getData.getNewPassword().equals(getData.getConfirmPassword())){
+        if (!getData.getNewPassword().equals(getData.getConfirmPassword())) {
             throw new BusinessException("新密码不一致", ErrorCode.BODY_ERROR);
         }
-        userDO.setUserPassword(getData.getNewPassword());
+        userDO.setUserPassword(PasswordUtil.encrypt(getData.getNewPassword()));
         //进行密码修改
         userDAO.updateUserPasswordByUuid(userDO);
     }
@@ -77,7 +82,7 @@ public class UserLogic implements UserService {
     @Override
     public void changeNickName(String userUuid, ChangeNickNameVO nickName) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
-        if (userDO == null){
+        if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
         userDO.setNickName(nickName.getNickName());
@@ -89,17 +94,17 @@ public class UserLogic implements UserService {
     @Override
     public void checkEmail(String userUuid, ChangeEmailVO getDate) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
-        if (userDO == null){
+        if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
                 .eq(EmailCodeDO::getUserEmail, userDO.getUserEmail()).one();
-        if (emailCodeDO == null){
+        if (emailCodeDO == null) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.HEADER_ERROR);
         }
         EmailCodeDO emailNewCodeDO = emailCodeDAO.lambdaQuery().eq(
                 EmailCodeDO::getUserEmail, getDate.getNewEmail()).one();
-        if (!emailNewCodeDO.getEmailCode().equals(getDate.getEmailCode())){
+        if (!emailNewCodeDO.getEmailCode().equals(getDate.getEmailCode())) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.BODY_ERROR);
         }
         //进行时间校验
@@ -114,8 +119,8 @@ public class UserLogic implements UserService {
 
     @Override
     public void changeEmail(String userUuid, ChangeEmailVO getDate) {
-        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid,userUuid).one();
-        if (userDO == null){
+        UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
+        if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
         String oldEmail = userDO.getUserEmail();
