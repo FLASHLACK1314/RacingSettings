@@ -10,6 +10,7 @@ import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ResultUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
  *
  * @author FLASHLACK
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")
+@CrossOrigin(origins = "http://127.0.0.1:5501")
 public class AuthController {
     private final AuthService authService;
     private final RedisService redisService;
@@ -36,6 +39,7 @@ public class AuthController {
     public ResponseEntity<BaseResponse<String>> userRegister(
             @RequestBody @Valid RegisterVO getData
     ) {
+        log.info("用户注册");
         //检查数据
         authService.checkRegisterData(getData);
         //进行注册
