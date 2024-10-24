@@ -23,11 +23,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/auth")
-@CrossOrigin(origins = "http://127.0.0.1:5501")
+@CrossOrigin(origins = "*")
 public class AuthController {
     private final AuthService authService;
     private final RedisService redisService;
-    private final JwtUtil jwtUtil;
 
     /**
      * 用户注册
@@ -39,7 +38,7 @@ public class AuthController {
     public ResponseEntity<BaseResponse<String>> userRegister(
             @RequestBody @Valid RegisterVO getData
     ) {
-        log.info("用户注册");
+        log.info("用户注册数据：{}", getData);
         //检查数据
         authService.checkRegisterData(getData);
         //进行注册
@@ -58,7 +57,7 @@ public class AuthController {
             @Valid @RequestBody LoginVO getData) {
         //检查数据
         String userUuid = authService.checkLoginData(getData);
-        String token = jwtUtil.generateToken(userUuid);
+        String token = JwtUtil.generateToken(userUuid);
         //存入Redis
         redisService.saveTokenToRedis(userUuid, token);
         return ResultUtil.success("登录成功", token);

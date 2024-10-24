@@ -33,7 +33,6 @@ public class AuthLogic implements AuthService {
     private final EmailCodeDAO emailCodeDAO;
     private final UserDAO userDAO;
     private final RedisService redisService;
-
     @Override
     public String checkLoginData(LoginVO getData) {
         //检查用户是否存在

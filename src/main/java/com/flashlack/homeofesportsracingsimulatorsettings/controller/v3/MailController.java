@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Validated
 @RequestMapping("/v3/mail")
+@CrossOrigin(origins = "*")
 public class MailController {
     private final MailService mailService;
 
@@ -33,7 +34,7 @@ public class MailController {
      * @param email 邮箱地址
      * @return 是否发送成功
      */
-    @GetMapping(value = "/sendEmailCode", name = "发送邮件验证码")
+    @PostMapping(value = "/sendEmailCode", name = "发送邮件验证码")
     public @NotNull ResponseEntity<BaseResponse<String>> sendEmailCode(
             @RequestParam("email") String email
     ) {

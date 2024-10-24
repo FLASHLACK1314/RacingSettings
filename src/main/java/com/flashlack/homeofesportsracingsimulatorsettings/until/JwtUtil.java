@@ -29,7 +29,7 @@ public class JwtUtil {
      * @param userUuid 用户名（作为 Payload 中的 subject）
      * @return 生成的 JWT 令牌字符串
      */
-    public  String generateToken(String userUuid) {
+    public static String generateToken(String userUuid) {
         return Jwts.builder()
                 // 设置主题，即用户身份标识
                 .setSubject(userUuid)

@@ -27,10 +27,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")  // 允许访问的路径
-                .allowedOrigins("http://127.0.0.1:5501")  // 允许的前端地址
-                .allowedMethods("GET", "POST", "PUT", "DELETE")  // 允许的HTTP方法
-                .allowedHeaders("*")  // 允许的请求头
-                .allowCredentials(true);  // 是否允许发送Cookie
+        // 允许访问的路径
+        registry.addMapping("/api/**")
+                // 允许的前端地址
+                .allowedOrigins("http://127.0.0.1:5501")
+                // 允许的HTTP方法
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                // 允许的请求头
+                .allowedHeaders("*")
+                // 是否允许发送Cookie
+                .allowCredentials(true);
     }
 }
