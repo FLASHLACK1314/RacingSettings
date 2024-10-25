@@ -1,4 +1,4 @@
-package com.flashlack.homeofesportsracingsimulatorsettings.until;
+package com.flashlack.homeofesportsracingsimulatorsettings.util;
 
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;

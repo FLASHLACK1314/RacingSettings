@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.Interceptor;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
-import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.JwtUtil;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;

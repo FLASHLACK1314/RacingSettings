@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.config.Initializer;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDInitializationConstants;
-import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

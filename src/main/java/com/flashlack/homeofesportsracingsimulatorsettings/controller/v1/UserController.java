@@ -6,7 +6,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswor
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
-import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;

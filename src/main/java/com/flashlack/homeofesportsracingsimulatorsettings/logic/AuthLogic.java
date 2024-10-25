@@ -10,7 +10,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDConstants;
-import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import com.xlf.utility.util.PasswordUtil;

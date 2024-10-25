@@ -1,6 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v2;
 
-import com.flashlack.homeofesportsracingsimulatorsettings.until.JwtUtil;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.JwtUtil;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.ResultUtil;
