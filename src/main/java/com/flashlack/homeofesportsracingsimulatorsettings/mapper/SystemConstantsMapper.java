@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 系统常量Mapper
+ *
  * @author FLASHLACK
  */
 @Mapper
