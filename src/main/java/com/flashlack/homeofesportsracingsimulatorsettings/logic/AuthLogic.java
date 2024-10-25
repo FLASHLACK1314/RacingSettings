@@ -3,13 +3,13 @@ package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
+import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.until.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * 权限逻辑
@@ -89,7 +88,7 @@ public class AuthLogic implements AuthService {
         //进行数据交换
         UserDO userDO = new UserDO();
         userDO.setUserUuid(UUIDUtils.generateUuid())
-                .setRoleUuid(UUIDConstants.ADMIN_ROLE_UUID)
+                .setRoleUuid(UUIDConstants.getConstant("USER_ROLE_UUID"))
                 .setUserEmail(getData.getUserEmail())
                 .setUserPassword(PasswordUtil.encrypt(getData.getUserPassword()))
                 .setNickName(getData.getNickName());
@@ -129,7 +128,7 @@ public class AuthLogic implements AuthService {
         EmailCodeDO emailNowCodeDO = new EmailCodeDO();
         emailNowCodeDO.setCreateTime(now);
         log.info("校验找回密码的目前时间为：{}", emailNowCodeDO.getCreateTime());
-        if (emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
+        if (!emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
             throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
         }
         //可以进行修改密码
@@ -138,10 +137,10 @@ public class AuthLogic implements AuthService {
         if (userDO == null) {
             throw new BusinessException("系统错误", ErrorCode.NOT_EXIST);
         }
-        if (Objects.equals(userDO.getUserPassword(), getData.getNewPassword())) {
+        if (PasswordUtil.verify(getData.getNewPassword(), userDO.getUserPassword())) {
             throw new BusinessException("静止设置新密码和旧密码相同", ErrorCode.OPERATION_ERROR);
         }
-        userDO.setUserPassword(getData.getNewPassword());
+        userDO.setUserPassword(PasswordUtil.encrypt(getData.getNewPassword()));
         userDAO.updateUserPasswordByUuid(userDO);
         //删除缓存中的Token
         log.info("正在删除缓存中的Token");

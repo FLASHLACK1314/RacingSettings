@@ -1,8 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.model;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -18,6 +16,7 @@ import java.time.LocalDateTime;
 @SuppressWarnings("unused")
 @Accessors(chain = true)
 public class EmailCodeDO {
+    @TableId(type = IdType.NONE)
     String userEmail;
     String userUuid;
     String emailCode;

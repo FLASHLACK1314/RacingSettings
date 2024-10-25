@@ -2,12 +2,14 @@ package com.flashlack.homeofesportsracingsimulatorsettings.config.Initializer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -20,9 +22,9 @@ import java.util.Map;
  *
  * @author FLASHLACK
  */
-@Component("databaseInitializer")
 @Slf4j
-public class DatabaseInitializer implements CommandLineRunner {
+@Configuration
+public class DatabaseInitializer {
 
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
@@ -50,21 +52,24 @@ public class DatabaseInitializer implements CommandLineRunner {
         tableSqlMap.put("system_constants", "templates/system_constants.sql");
     }
 
-    @Override
-    public void run(String... args) {
-        // 遍历表名及对应的 SQL 文件路径，按照插入顺序执行
-        for (Map.Entry<String, String> entry : tableSqlMap.entrySet()) {
-            String tableName = entry.getKey();
-            String scriptPath = entry.getValue();
-            // 检查表是否存在
-            if (!checkTableExists(tableName)) {
-                log.info("表 {} 不存在，正在执行 SQL 文件 {} 创建表并初始化数据...", tableName, scriptPath);
-                // 执行 SQL 文件
-                executeSqlScript(scriptPath);
-            } else {
-                log.info("表 {} 已存在，跳过创建操作。", tableName);
+    @Bean
+    @Order(1)
+    public CommandLineRunner run() {
+        return args -> {
+            // 遍历表名及对应的 SQL 文件路径，按照插入顺序执行
+            for (Map.Entry<String, String> entry : tableSqlMap.entrySet()) {
+                String tableName = entry.getKey();
+                String scriptPath = entry.getValue();
+                // 检查表是否存在
+                if (!checkTableExists(tableName)) {
+                    log.info("表 {} 不存在，正在执行 SQL 文件 {} 创建表并初始化数据...", tableName, scriptPath);
+                    // 执行 SQL 文件
+                    executeSqlScript(scriptPath);
+                } else {
+                    log.info("表 {} 已存在，跳过创建操作。", tableName);
+                }
             }
-        }
+        };
     }
 
     /**
