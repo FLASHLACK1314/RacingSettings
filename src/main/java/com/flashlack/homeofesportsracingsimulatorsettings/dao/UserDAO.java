@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.flashlack.homeofesportsracingsimulatorsettings.mapper.UserMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 

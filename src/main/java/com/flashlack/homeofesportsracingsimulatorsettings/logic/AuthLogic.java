@@ -2,8 +2,8 @@ package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;

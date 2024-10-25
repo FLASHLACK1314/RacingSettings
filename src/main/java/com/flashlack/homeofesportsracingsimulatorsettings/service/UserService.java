@@ -1,9 +1,9 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.UserInformationDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 
 /**
  * 用户服务接口
@@ -17,7 +17,7 @@ public interface UserService {
      * @param userUuid 用户UUID
      * @return 用户信息
      */
-    UserInformationVO getUserInformation(
+    UserInformationDTO getUserInformation(
             String userUuid);
 
     /**

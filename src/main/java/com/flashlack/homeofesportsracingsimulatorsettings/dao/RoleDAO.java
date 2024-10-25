@@ -3,7 +3,7 @@ package com.flashlack.homeofesportsracingsimulatorsettings.dao;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.flashlack.homeofesportsracingsimulatorsettings.mapper.RoleMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.RoleDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
 import org.springframework.stereotype.Repository;
 
 /**

@@ -3,7 +3,7 @@ package com.flashlack.homeofesportsracingsimulatorsettings.dao;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.flashlack.homeofesportsracingsimulatorsettings.mapper.EmailCodeMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 

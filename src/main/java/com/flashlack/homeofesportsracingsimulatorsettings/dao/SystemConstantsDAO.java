@@ -3,7 +3,7 @@ package com.flashlack.homeofesportsracingsimulatorsettings.dao;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.flashlack.homeofesportsracingsimulatorsettings.mapper.SystemConstantsMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.SystemConstantsDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SystemConstantsDO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 

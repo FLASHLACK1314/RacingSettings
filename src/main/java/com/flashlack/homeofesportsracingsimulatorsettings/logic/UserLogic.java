@@ -2,12 +2,12 @@ package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.UserDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.UserInformationDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
@@ -31,12 +31,12 @@ public class UserLogic implements UserService {
     private final EmailCodeDAO emailCodeDAO;
 
     @Override
-    public UserInformationVO getUserInformation(String userUuid) {
+    public UserInformationDTO getUserInformation(String userUuid) {
         UserDO userDO = userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
-        UserInformationVO userInformationVO = new UserInformationVO();
-        userInformationVO.setUserEmail(userDO.getUserEmail())
+        UserInformationDTO userInformationDTO = new UserInformationDTO();
+        userInformationDTO.setUserEmail(userDO.getUserEmail())
                 .setNickName(userDO.getNickName());
-        return userInformationVO;
+        return userInformationDTO;
     }
 
     @Override

@@ -1,14 +1,13 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsSetupsDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 邮箱验证码Mapper
- *
+ * 设置信息实体类
  * @author FLASHLACK
  */
 @Mapper
-public interface EmailCodeMapper extends BaseMapper<EmailCodeDO> {
+public interface SettingsSetupsMapper extends BaseMapper<SettingsSetupsDO> {
 }

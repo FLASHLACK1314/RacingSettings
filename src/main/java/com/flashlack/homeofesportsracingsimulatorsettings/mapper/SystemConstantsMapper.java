@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.SystemConstantsDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SystemConstantsDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

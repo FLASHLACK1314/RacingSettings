@@ -1,9 +1,9 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.UserInformationDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UserInformationVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -14,6 +14,7 @@ import com.xlf.utility.exception.BusinessException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,16 +39,16 @@ public class UserController {
      * @return 用户信息
      */
     @GetMapping(value = "/getOwnUserInformation", name = "获取用户信息")
-    public ResponseEntity<BaseResponse<UserInformationVO>> getOwnUserInformation(
+    public @NotNull ResponseEntity<BaseResponse<UserInformationDTO>> getOwnUserInformation(
             HttpServletRequest request
     ) {
         String userUuid = UUIDUtils.getUuidByRequest(request);
         if (redisService.getTokenFromRedis(userUuid) == null) {
             throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
         }
-        UserInformationVO userInformationVO = userService.getUserInformation(userUuid);
+        UserInformationDTO userInformationDTO = userService.getUserInformation(userUuid);
         log.info("获取用户信息");
-        return ResultUtil.success("获取用户信息成功", userInformationVO);
+        return ResultUtil.success("获取用户信息成功", userInformationDTO);
     }
 
     /**

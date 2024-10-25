@@ -1,7 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.MailService;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;

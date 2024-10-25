@@ -1,4 +1,4 @@
-package com.flashlack.homeofesportsracingsimulatorsettings.model;
+package com.flashlack.homeofesportsracingsimulatorsettings.model.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -7,16 +7,19 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 存放系统信息常量
+ * 登录信息对象
  *
  * @author FLASHLACK
  */
 @Data
-@TableName("system_constants")
+@TableName("settings_user")
 @Accessors(chain = true)
 @SuppressWarnings("unused")
-public class SystemConstantsDO {
+public class UserDO {
     @TableId(type = IdType.NONE)
-    String key;
-    String value;
+    String userUuid;
+    String roleUuid;
+    String userPassword;
+    String userEmail;
+    String nickName;
 }
