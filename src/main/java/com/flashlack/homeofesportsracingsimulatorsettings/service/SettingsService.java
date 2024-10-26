@@ -1,6 +1,8 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
-import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddACCSetupsVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 
 /**
  * 设置服务接口
@@ -14,5 +16,24 @@ public interface SettingsService {
      */
     void addAccSetups(
             String userUuid,
-            AddACCSetupsVO getData);
+            AddAccSetupsVO getData);
+
+    /**
+     * 获取赛车设置
+     *
+     * @param userUuid 用户UUID
+     * @param gameName 游戏名称
+     * @param trackName 赛道名称
+     * @param carName 车辆名称
+     * @param page 页数
+     * @return 赛车设置链表
+     */
+    Page<GetAccBaseSetupsDTO> getAccSetups(
+            String userUuid,
+            String gameName,
+            String trackName,
+            String carName,
+            Integer page
+    );
+
 }

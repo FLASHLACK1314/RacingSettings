@@ -37,10 +37,8 @@ public class UUIDConstants {
             CONSTANTS_MAP.put("CAR_ACC_HGT3E2_UUID", systemConstantsDAO.getById("CAR_ACC_HGT3E2_UUID").getValue());
             CONSTANTS_MAP.put("CAR_ACC_PORSCHE992R_UUID", systemConstantsDAO.getById("CAR_ACC_PORSCHE992R_UUID").getValue());
             CONSTANTS_MAP.put("CAR_F124_F1_UUID", systemConstantsDAO.getById("CAR_F124_F1_UUID").getValue());
-            CONSTANTS_MAP.put("TRACK_ACC_SPA_UUID", systemConstantsDAO.getById("TRACK_ACC_SPA_UUID").getValue());
-            CONSTANTS_MAP.put("TRACK_ACC_MONZA_UUID", systemConstantsDAO.getById("TRACK_ACC_MONZA_UUID").getValue());
-            CONSTANTS_MAP.put("TRACK_F124_SPA_UUID", systemConstantsDAO.getById("TRACK_F124_SPA_UUID").getValue());
-            CONSTANTS_MAP.put("TRACK_F124_MONZA_UUID", systemConstantsDAO.getById("TRACK_F124_MONZA_UUID").getValue());
+            CONSTANTS_MAP.put("TRACK_ACC_SPA_UUID", systemConstantsDAO.getById("TRACK_SPA_UUID").getValue());
+            CONSTANTS_MAP.put("TRACK_ACC_MONZA_UUID", systemConstantsDAO.getById("TRACK_MONZA_UUID").getValue());
         };
     }
 

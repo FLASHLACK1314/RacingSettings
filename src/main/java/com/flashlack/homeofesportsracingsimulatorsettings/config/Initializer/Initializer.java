@@ -68,10 +68,8 @@ public class Initializer {
         insertCar(UUIDInitializationConstants.CAR_F124_F1_UUID, "F1");
 
         // 插入赛道
-        insertTrack(UUIDInitializationConstants.TRACK_ACC_SPA_UUID, "ACC_SPA");
-        insertTrack(UUIDInitializationConstants.TRACK_ACC_MONZA_UUID, "ACC_MONZA");
-        insertTrack(UUIDInitializationConstants.TRACK_F124_SPA_UUID, "F124_SPA");
-        insertTrack(UUIDInitializationConstants.TRACK_F124_MONZA_UUID, "F124_MONZA");
+        insertTrack(UUIDInitializationConstants.TRACK_SPA_UUID, "SPA");
+        insertTrack(UUIDInitializationConstants.TRACK_MONZA_UUID, "MONZA");
 
         // 插入系统常量
         insertSystemConstants("ADMIN_ROLE_UUID", UUIDInitializationConstants.ADMIN_ROLE_UUID);
@@ -82,10 +80,9 @@ public class Initializer {
         insertSystemConstants("CAR_ACC_HGT3E2_UUID", UUIDInitializationConstants.CAR_ACC_HGT3E2_UUID);
         insertSystemConstants("CAR_ACC_PORSCHE992R_UUID", UUIDInitializationConstants.CAR_ACC_PORSCHE992R_UUID);
         insertSystemConstants("CAR_F124_F1_UUID", UUIDInitializationConstants.CAR_F124_F1_UUID);
-        insertSystemConstants("TRACK_ACC_SPA_UUID", UUIDInitializationConstants.TRACK_ACC_SPA_UUID);
-        insertSystemConstants("TRACK_ACC_MONZA_UUID", UUIDInitializationConstants.TRACK_ACC_MONZA_UUID);
-        insertSystemConstants("TRACK_F124_SPA_UUID", UUIDInitializationConstants.TRACK_F124_SPA_UUID);
-        insertSystemConstants("TRACK_F124_MONZA_UUID", UUIDInitializationConstants.TRACK_F124_MONZA_UUID);
+        insertSystemConstants("TRACK_SPA_UUID", UUIDInitializationConstants.TRACK_SPA_UUID);
+        insertSystemConstants("TRACK_MONZA_UUID", UUIDInitializationConstants.TRACK_MONZA_UUID);
+
     }
 
     // 初始化管理员用户数据

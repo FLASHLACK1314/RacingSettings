@@ -17,8 +17,6 @@ public class UUIDInitializationConstants {
     public static final String CAR_ACC_HGT3E2_UUID = UUIDUtils.generateUuid();
     public static final String CAR_ACC_PORSCHE992R_UUID = UUIDUtils.generateUuid();
     public static final String CAR_F124_F1_UUID = UUIDUtils.generateUuid();
-    public static final String TRACK_ACC_SPA_UUID = UUIDUtils.generateUuid();
-    public static final String TRACK_ACC_MONZA_UUID = UUIDUtils.generateUuid();
-    public static final String TRACK_F124_SPA_UUID = UUIDUtils.generateUuid();
-    public static final String TRACK_F124_MONZA_UUID = UUIDUtils.generateUuid();
+    public static final String TRACK_SPA_UUID = UUIDUtils.generateUuid();
+    public static final String TRACK_MONZA_UUID = UUIDUtils.generateUuid();
 }
