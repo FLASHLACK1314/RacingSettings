@@ -147,4 +147,19 @@ public class AuthLogic implements AuthService {
         redisService.deleteTokenFromRedis(userDO.getUserUuid());
     }
 
+    @Override
+    public void checkUserExist(String userUuid) {
+        UserDO userDO = userDAO.lambdaQuery()
+                .eq(UserDO::getUserUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+    }
+
+    @Override
+    public UserDO getUserByUuid(String userUuid) {
+        return userDAO.lambdaQuery()
+                .eq(UserDO::getUserUuid, userUuid).one();
+    }
+
 }

@@ -7,21 +7,14 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 设置信息实体类
- *
+ * 游戏设置数据对象
  * @author FLASHLACK
  */
 @Data
-@TableName("settings_setups")
-@SuppressWarnings("unused")
+@TableName("settings_track")
 @Accessors(chain = true)
-public class SettingsSetupsDO {
+public class SettingsTrackDO {
     @TableId(type = IdType.NONE)
-    String setupsUuid;
-    String gameUuid;
     String trackUuid;
-    String carUuid;
-    String userUuid;
-    String setupsName;
-    String setups;
+    String trackName;
 }
