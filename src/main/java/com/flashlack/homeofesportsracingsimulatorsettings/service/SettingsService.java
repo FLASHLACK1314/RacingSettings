@@ -1,6 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 
@@ -28,7 +28,7 @@ public interface SettingsService {
      * @param page 页数
      * @return 赛车设置链表
      */
-    Page<GetAccBaseSetupsDTO> getAccSetups(
+    CustomPage<GetAccBaseSetupsDTO> getAccSetups(
             String userUuid,
             String gameName,
             String trackName,

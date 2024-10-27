@@ -5,6 +5,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsCarDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
@@ -110,10 +111,11 @@ public class SettingsLogic implements SettingsService {
 
 
     @Override
-    public Page<GetAccBaseSetupsDTO> getAccSetups(String userUuid, String gameName, String trackName,
-                                                  String carName, Integer page) {
+    public CustomPage<GetAccBaseSetupsDTO> getAccSetups(String userUuid, String gameName, String trackName,
+                                                        String carName, Integer page) {
         // 设置每页大小
         final int pageSize = 10;
+
         // 准备用户数据
         UserDO userDO = authService.getUserByUuid(userUuid);
         if (userDO == null) {
@@ -122,20 +124,17 @@ public class SettingsLogic implements SettingsService {
 
         // 创建分页参数
         Page<SettingsSetupsDO> pageParam = new Page<>(page, pageSize);
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
 
         // 查询满足条件的数据，分页处理
         Page<SettingsSetupsDO> settingsPage = settingsSetupsDAO.lambdaQuery()
                 .eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getGameUuid, getGameTrackCarUuidByName(gameName, trackName, carName)
-                        .getGameUuid())
-                .eq(SettingsSetupsDO::getTrackUuid, getGameTrackCarUuidByName(gameName, trackName, carName)
-                        .getTrackUuid())
-                .eq(SettingsSetupsDO::getCarUuid, getGameTrackCarUuidByName(gameName, trackName, carName)
-                        .getCarUuid())
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
                 .page(pageParam);
 
         // 将查询结果映射到目标DTO对象
-        Page<GetAccBaseSetupsDTO> resultPage = new Page<>(page, pageSize);
         List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsPage.getRecords().stream()
                 .map(settingsSetupsDO -> {
                     GetAccBaseSetupsDTO getAccBaseSetupsDTO = new GetAccBaseSetupsDTO();
@@ -144,11 +143,12 @@ public class SettingsLogic implements SettingsService {
                     return getAccBaseSetupsDTO;
                 }).collect(Collectors.toList());
 
-        // 将结果记录和总条目数赋值到分页结果中
+        // 封装为自定义分页对象
+        CustomPage<GetAccBaseSetupsDTO> resultPage = new CustomPage<>();
         resultPage.setRecords(getAccSetupsDTOList);
         resultPage.setTotal(settingsPage.getTotal());
+        resultPage.setSize((long) pageSize);
 
-        // 返回封装好的 BaseResponse 包含分页数据
         return resultPage;
     }
 

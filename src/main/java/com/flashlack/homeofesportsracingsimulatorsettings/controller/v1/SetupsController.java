@@ -1,6 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
@@ -62,7 +62,7 @@ public class SetupsController {
      * @return ACC赛车设置
      */
     @GetMapping(value = "/getAccBaseSetups", name = "获取ACC赛车设置基本信息")
-    public ResponseEntity<BaseResponse<Page<GetAccBaseSetupsDTO>>> getSetups(
+    public ResponseEntity<BaseResponse<CustomPage<GetAccBaseSetupsDTO>>> getSetups(
             HttpServletRequest request,
             @RequestParam Integer page,
             @RequestParam String gameName,
@@ -70,7 +70,7 @@ public class SetupsController {
             @RequestParam String carName
     ) {
         String userUuid = getUserUuid(request);
-        Page<GetAccBaseSetupsDTO> getAccSetupsDtoPage = settingsService.getAccSetups(userUuid, gameName,
+        CustomPage<GetAccBaseSetupsDTO> getAccSetupsDtoPage = settingsService.getAccSetups(userUuid, gameName,
                 trackName, carName, page);
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }

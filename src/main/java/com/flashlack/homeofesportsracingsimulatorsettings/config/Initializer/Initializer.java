@@ -41,7 +41,7 @@ public class Initializer {
                 initializeAdminUser();
                 log.info("管理员用户数据初始化完成！");
             } else {
-                log.info("用户表内已有数据，跳过初始化操作。");
+                log.info("用户表内已有数据，跳过初始化操作，所有数据已经初始化完成。");
             }
         };
     }
