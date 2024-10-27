@@ -6,10 +6,13 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.AccSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -85,15 +88,18 @@ public class SettingsLogic implements SettingsService {
         if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
-        //检查用户的的设置名字是否重复是否重复
-        if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
-            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
-        }
         //准备游戏、赛道、车辆数据
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(getData.getGameName(),
                 getData.getTrackName(), getData.getCarName());
         log.info("游戏、赛道、车辆uuid-{}", gameTrackCarUuidDTO);
+        //检查用户的的设置名字是否重复是否重复
+        if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
+            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+        }
         //转换数据
         SettingsSetupsDO settingsSetupsDO = new SettingsSetupsDO();
         settingsSetupsDO.setSetupsUuid(UUIDUtils.generateUuid())
@@ -111,7 +117,7 @@ public class SettingsLogic implements SettingsService {
 
 
     @Override
-    public CustomPage<GetAccBaseSetupsDTO> getAccSetups(String userUuid, String gameName, String trackName,
+    public CustomPage<GetAccBaseSetupsDTO> getAccBaseSetups(String userUuid, String gameName, String trackName,
                                                         String carName, Integer page) {
         // 设置每页大小
         final int pageSize = 10;
@@ -133,6 +139,9 @@ public class SettingsLogic implements SettingsService {
                 .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
                 .page(pageParam);
+        if (settingsPage.getRecords().isEmpty()) {
+            throw new BusinessException("抱歉暂无数据", ErrorCode.PARAMETER_ERROR);
+        }
 
         // 将查询结果映射到目标DTO对象
         List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsPage.getRecords().stream()
@@ -152,7 +161,68 @@ public class SettingsLogic implements SettingsService {
         return resultPage;
     }
 
+    @Override
+    public GetAccSetupsDTO getAccSetups(String userUuid, String setupsUuid) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        log.info("获取的赛车设置-{}", settingsSetupsDO);
+        if (settingsSetupsDO != null) {
+           //进行数据交换
+            GetAccSetupsDTO getAccSetupsDTO = new GetAccSetupsDTO();
+            getAccSetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                    .setSetupsName(settingsSetupsDO.getSetupsName())
+                    .setAccSetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), AccSetupsDTO.class));
+            return getAccSetupsDTO;
+        }else {
+            throw new BusinessException("暂无此赛车设置", ErrorCode.PARAMETER_ERROR);
+        }
+    }
 
+    @Override
+    public void deleteAccSetups(String userUuid, String setupsUuid) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 删除数据
+        if (!settingsSetupsDAO.lambdaUpdate().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).remove()) {
+            throw new BusinessException("删除失败", ErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public void updateAccSetups(String userUuid, UpdateAccSetupsVO getData) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 准备游戏、赛道、车辆数据
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, getData.getSetupsUuid()).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
+        }
+        if (settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
+            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+        }
+        // 转换数据
+        settingsSetupsDO.setSetupsName(getData.getSetupsName())
+                .setSetups(gson.toJson(getData.getAccSetupsDTO()));
+        // 更新数据
+        if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
+            throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
+        }
+    }
 
 
 }

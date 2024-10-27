@@ -83,7 +83,7 @@ public class AccSetupsDTO {
     public static class FuelAndStrategy {
         private Double fuelAmount;       // 燃料量 (单位：L)
         private String tireCompound;      // 轮胎种类 (干/湿)
-        private String tireSettings;     // 轮胎设置
+        private Double tireSettings;     // 轮胎设置
         private Double frontBrake;       // 前刹车
         private Double rearBrake;        // 后刹车
     }

@@ -2,7 +2,9 @@ package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -62,7 +64,7 @@ public class SetupsController {
      * @return ACC赛车设置
      */
     @GetMapping(value = "/getAccBaseSetups", name = "获取ACC赛车设置基本信息")
-    public ResponseEntity<BaseResponse<CustomPage<GetAccBaseSetupsDTO>>> getSetups(
+    public ResponseEntity<BaseResponse<CustomPage<GetAccBaseSetupsDTO>>> getAccBaseSetups(
             HttpServletRequest request,
             @RequestParam Integer page,
             @RequestParam String gameName,
@@ -70,19 +72,54 @@ public class SetupsController {
             @RequestParam String carName
     ) {
         String userUuid = getUserUuid(request);
-        CustomPage<GetAccBaseSetupsDTO> getAccSetupsDtoPage = settingsService.getAccSetups(userUuid, gameName,
+        CustomPage<GetAccBaseSetupsDTO> getAccSetupsDtoPage = settingsService
+                .getAccBaseSetups(userUuid, gameName,
                 trackName, carName, page);
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }
+
+    /**
+     * 获取ACC详细赛车设置
+     * @return ACC赛车设置
+     */
+    @GetMapping(value = "/getAccSetups", name = "获取ACC赛车设置")
+    public @NotNull ResponseEntity<BaseResponse<GetAccSetupsDTO>>  getAccSetups(
+            HttpServletRequest request,
+            @RequestParam String setupsUuid
+    ) {
+        String userUuid = getUserUuid(request);
+        GetAccSetupsDTO getAccSetupsDto = settingsService.getAccSetups(userUuid, setupsUuid);
+        return ResultUtil.success("获取赛车设置成功",getAccSetupsDto);
+    }
+
     /**
      * 删除ACC赛车设置
      * @return 是否删除成功
      */
     @DeleteMapping(value = "/deleteAccSetups", name = "删除赛车设置")
     public ResponseEntity<BaseResponse<String>> deleteSetups(
-            HttpServletRequest request
+            HttpServletRequest request,
+            @RequestParam String setupsUuid
     ) {
         String userUuid = getUserUuid(request);
+        settingsService.deleteAccSetups(userUuid, setupsUuid);
         return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
+    }
+
+    /**
+     * 更新ACC赛车设置
+     * @param request 请求
+     * @param getData 更新赛车设置数据
+     * @return 是否更新成功
+     */
+    @PostMapping(value = "/updateAccSetups", name = "更新ACC赛车设置")
+    public ResponseEntity<BaseResponse<String>> updateSetups(
+            HttpServletRequest request,
+            @RequestBody UpdateAccSetupsVO getData
+    ) {
+        String userUuid = getUserUuid(request);
+        log.info("更新ACC赛车设置数据：{}", getData);
+        settingsService.updateAccSetups(userUuid,getData);
+        return ResultUtil.success("更新赛车设置成功", "更新赛车设置成功");
     }
 }
