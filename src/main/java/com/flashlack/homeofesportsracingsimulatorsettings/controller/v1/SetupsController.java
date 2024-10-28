@@ -66,7 +66,7 @@ public class SetupsController {
     @GetMapping(value = "/getAccBaseSetups", name = "获取ACC赛车设置基本信息")
     public ResponseEntity<BaseResponse<CustomPage<GetAccBaseSetupsDTO>>> getAccBaseSetups(
             HttpServletRequest request,
-            @RequestParam Integer page,
+            @RequestParam (value = "page",defaultValue = "1")Integer page,
             @RequestParam String gameName,
             @RequestParam String trackName,
             @RequestParam String carName
@@ -102,6 +102,7 @@ public class SetupsController {
             @RequestParam String setupsUuid
     ) {
         String userUuid = getUserUuid(request);
+        log.info("删除ACC赛车设置数据：{}", setupsUuid);
         settingsService.deleteAccSetups(userUuid, setupsUuid);
         return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
     }
