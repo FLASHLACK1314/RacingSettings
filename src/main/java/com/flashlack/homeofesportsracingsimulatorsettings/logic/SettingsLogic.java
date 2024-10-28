@@ -1,6 +1,5 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsCarDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
@@ -118,7 +117,7 @@ public class SettingsLogic implements SettingsService {
 
     @Override
     public CustomPage<GetAccBaseSetupsDTO> getAccBaseSetups(String userUuid, String gameName, String trackName,
-                                                        String carName, Integer page) {
+                                                            String carName, Integer page) {
         // 设置每页大小
         final int pageSize = 10;
 
@@ -128,34 +127,37 @@ public class SettingsLogic implements SettingsService {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
 
-        // 创建分页参数
-        Page<SettingsSetupsDO> pageParam = new Page<>(page, pageSize);
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
 
-        // 查询满足条件的数据，分页处理
-        Page<SettingsSetupsDO> settingsPage = settingsSetupsDAO.lambdaQuery()
+        // 1. 计算总数（不加分页限制）
+        long total = settingsSetupsDAO.lambdaQuery()
                 .eq(SettingsSetupsDO::getUserUuid, userUuid)
                 .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
                 .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
-                .page(pageParam);
-        if (settingsPage.getRecords().isEmpty()) {
-            throw new BusinessException("抱歉暂无数据", ErrorCode.PARAMETER_ERROR);
-        }
+                .count();
 
-        // 将查询结果映射到目标DTO对象
-        List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsPage.getRecords().stream()
-                .map(settingsSetupsDO -> {
-                    GetAccBaseSetupsDTO getAccBaseSetupsDTO = new GetAccBaseSetupsDTO();
-                    getAccBaseSetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
-                            .setSetupsName(settingsSetupsDO.getSetupsName());
-                    return getAccBaseSetupsDTO;
-                }).collect(Collectors.toList());
+        // 2. 查询当前页数据
+        int offset = (page - 1) * pageSize;
+        List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .last("LIMIT " + pageSize + " OFFSET " + offset)
+                .list();
 
-        // 封装为自定义分页对象
+        // 3. 映射查询结果到目标DTO对象
+        List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
+                .map(settingsSetupsDO -> new GetAccBaseSetupsDTO()
+                        .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                        .setSetupsName(settingsSetupsDO.getSetupsName()))
+                .collect(Collectors.toList());
+
+        // 4. 封装为自定义分页对象
         CustomPage<GetAccBaseSetupsDTO> resultPage = new CustomPage<>();
         resultPage.setRecords(getAccSetupsDTOList);
-        resultPage.setTotal(settingsPage.getTotal());
+        resultPage.setTotal(total);
         resultPage.setSize((long) pageSize);
 
         return resultPage;
