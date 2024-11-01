@@ -214,15 +214,19 @@ public class SettingsLogic implements SettingsService {
         if (settingsSetupsDO == null) {
             throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
         }
-        if (settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
-            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
-        }
-        // 转换数据
-        settingsSetupsDO.setSetupsName(getData.getSetupsName())
-                .setSetups(gson.toJson(getData.getAccSetupsDTO()));
-        // 更新数据
-        if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
-            throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
+        if(!settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
+            if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                    .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
+                throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+            }
+        }else {
+            // 转换数据
+            settingsSetupsDO.setSetupsName(getData.getSetupsName())
+                    .setSetups(gson.toJson(getData.getAccSetupsDTO()));
+            // 更新数据
+            if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
+                throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
+            }
         }
     }
 
