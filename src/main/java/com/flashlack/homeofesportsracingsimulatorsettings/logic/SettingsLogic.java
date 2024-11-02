@@ -5,12 +5,10 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.AccSetupsDTO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
@@ -227,6 +225,109 @@ public class SettingsLogic implements SettingsService {
             if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
                 throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
             }
+        }
+    }
+
+    @Override
+    public void addF124Setups(String userUuid, AddF124SetupsVO getData) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 准备游戏、赛道、车辆数据
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(getData.getGameName(),
+                getData.getTrackName(), getData.getCarName());
+        log.info("F124 游戏、赛道、车辆uuid-{}", gameTrackCarUuidDTO);
+        // 检查用户的的设置名字是否重复是否重复
+        if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
+            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+        }
+        // 转换数据
+        SettingsSetupsDO settingsSetupsDO = new SettingsSetupsDO();
+        settingsSetupsDO.setSetupsUuid(UUIDUtils.generateUuid())
+                .setGameUuid(gameTrackCarUuidDTO.getGameUuid())
+                .setTrackUuid(gameTrackCarUuidDTO.getTrackUuid())
+                .setCarUuid(gameTrackCarUuidDTO.getCarUuid())
+                .setUserUuid(userUuid)
+                .setSetupsName(getData.getSetupsName())
+                .setSetups(gson.toJson(getData.getF124SetupsDTO()));
+        // 插入数据
+        log.info("数据库添加F124设置-{}", settingsSetupsDO);
+        settingsSetupsDAO.save(settingsSetupsDO);
+    }
+
+    @Override
+    public CustomPage<GetF124BaseSetupsDTO> getF124BaseSetups(String userUuid, String gameName, String trackName, String carName, Integer page) {
+        // 设置每页大小
+        final int pageSize = 10;
+
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
+
+        // 1. 计算总数（不加分页限制）
+        long total = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .count();
+
+        // 2. 查询当前页数据
+        int offset = (page - 1) * pageSize;
+        List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .last("LIMIT " + pageSize + " OFFSET " + offset)
+                .list();
+
+        // 3. 映射查询结果到目标DTO对象
+        List<GetF124BaseSetupsDTO> getF124BaseSetupsDTOList = settingsRecords.stream()
+                .map(settingsSetupsDO -> new GetF124BaseSetupsDTO()
+                        .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                        .setSetupsName(settingsSetupsDO.getSetupsName()))
+                .collect(Collectors.toList());
+
+        // 4. 封装为自定义分页对象
+        CustomPage<GetF124BaseSetupsDTO> resultPage = new CustomPage<>();
+        resultPage.setRecords(getF124BaseSetupsDTOList);
+        resultPage.setTotal(total);
+        resultPage.setSize((long) pageSize);
+
+        return resultPage;
+    }
+
+    @Override
+    public GetF124SetupsDTO getF124Setups(String userUuid, String setupsUuid) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        log.info("获取F124的赛车设置-{}", settingsSetupsDO);
+        if (settingsSetupsDO != null) {
+            // 进行数据交换
+            GetF124SetupsDTO getF124SetupsDTO = new GetF124SetupsDTO();
+            getF124SetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                    .setSetupsName(settingsSetupsDO.getSetupsName())
+                    .setF124SetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), F124SetupsDTO.class));
+            return getF124SetupsDTO;
+        } else {
+            throw new BusinessException("暂无此赛车设置", ErrorCode.PARAMETER_ERROR);
         }
     }
 
