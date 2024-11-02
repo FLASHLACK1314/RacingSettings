@@ -8,6 +8,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124Setup
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateF124SetupsVO;
 
 /**
  * 设置服务接口
@@ -111,4 +112,24 @@ public interface SettingsService {
     GetF124SetupsDTO getF124Setups(
             String userUuid,
             String setupsUuid);
+
+    /**
+     * 删除F124赛车设置
+     *
+     * @param userUuid   用户UUID
+     * @param setupsUuid 赛车设置UUID
+     */
+    void deleteF124Setups(
+            String userUuid,
+            String setupsUuid);
+
+    /**
+     * 更新F124赛车设置
+     *
+     * @param userUuid 用户UUID
+     * @param getData  更新赛车设置数据
+     */
+    void updateF124Setups(
+            String userUuid,
+            UpdateF124SetupsVO getData);
 }

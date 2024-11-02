@@ -10,6 +10,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -54,7 +55,7 @@ public class SettingsLogic implements SettingsService {
         if (settingsGameDO != null) {
             gameTrackCarUuidDTO.setGameUuid(settingsGameDO.getGameUuid());
         }
-        log.info("游戏UUID为-{}",gameTrackCarUuidDTO.getGameUuid());
+        log.info("游戏UUID为-{}", gameTrackCarUuidDTO.getGameUuid());
         //获取赛道uuid
         log.info("赛道名-{}", trackName);
         SettingsTrackDO settingsTrackDO = settingsTrackDAO.lambdaQuery()
@@ -64,12 +65,12 @@ public class SettingsLogic implements SettingsService {
         }
         log.info("赛道UUID为-{}", gameTrackCarUuidDTO.getTrackUuid());
         //获取车辆uuid
-        log.info("车辆名字为-{}",carName);
+        log.info("车辆名字为-{}", carName);
         SettingsCarDO settingsCarDO = settingsCarDAO.lambdaQuery().eq(SettingsCarDO::getCarName, carName).one();
         if (settingsCarDO != null) {
             gameTrackCarUuidDTO.setCarUuid(settingsCarDO.getCarUuid());
         }
-        log.info("车辆UUID为-{}",gameTrackCarUuidDTO.getCarUuid());
+        log.info("车辆UUID为-{}", gameTrackCarUuidDTO.getCarUuid());
         if (gameTrackCarUuidDTO.getGameUuid() == null || gameTrackCarUuidDTO.getTrackUuid() == null
                 || gameTrackCarUuidDTO.getCarUuid() == null) {
             throw new BusinessException("游戏、赛道、车辆不存在", ErrorCode.PARAMETER_ERROR);
@@ -110,7 +111,6 @@ public class SettingsLogic implements SettingsService {
         log.info("数据库添加ACC设置-{}", settingsSetupsDO);
         settingsSetupsDAO.save(settingsSetupsDO);
     }
-
 
 
     @Override
@@ -173,13 +173,13 @@ public class SettingsLogic implements SettingsService {
                 .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
         log.info("获取的赛车设置-{}", settingsSetupsDO);
         if (settingsSetupsDO != null) {
-           //进行数据交换
+            //进行数据交换
             GetAccSetupsDTO getAccSetupsDTO = new GetAccSetupsDTO();
             getAccSetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
                     .setSetupsName(settingsSetupsDO.getSetupsName())
                     .setAccSetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), AccSetupsDTO.class));
             return getAccSetupsDTO;
-        }else {
+        } else {
             throw new BusinessException("暂无此赛车设置", ErrorCode.PARAMETER_ERROR);
         }
     }
@@ -212,19 +212,16 @@ public class SettingsLogic implements SettingsService {
         if (settingsSetupsDO == null) {
             throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
         }
-        if(!settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
+        if (!settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
             if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
                     .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
                 throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
             }
-        }else {
-            // 转换数据
-            settingsSetupsDO.setSetupsName(getData.getSetupsName())
-                    .setSetups(gson.toJson(getData.getAccSetupsDTO()));
-            // 更新数据
-            if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
-                throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
-            }
+        }
+        settingsSetupsDO.setSetupsName(getData.getSetupsName())
+                .setSetups(gson.toJson(getData.getAccSetupsDTO()));
+        if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
+            throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
         }
     }
 
@@ -328,6 +325,50 @@ public class SettingsLogic implements SettingsService {
             return getF124SetupsDTO;
         } else {
             throw new BusinessException("暂无此赛车设置", ErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public void deleteF124Setups(String userUuid, String setupsUuid) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 删除数据
+        if (!settingsSetupsDAO.lambdaUpdate().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).remove()) {
+            throw new BusinessException("删除失败", ErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public void updateF124Setups(String userUuid, UpdateF124SetupsVO getData) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 准备游戏、赛道、车辆数据
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, getData.getSetupsUuid()).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
+        }
+        if (!settingsSetupsDO.getSetupsName().equals(getData.getSetupsName())) {
+            if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                    .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
+                throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+            }
+        }
+        // 转换数据
+        settingsSetupsDO.setSetupsName(getData.getSetupsName())
+                .setSetups(gson.toJson(getData.getF124SetupsDTO()));
+        log.info("更新的F124赛车设置-{}", settingsSetupsDO);
+        // 更新数据
+        if (!settingsSetupsDAO.updateById(settingsSetupsDO)) {
+            throw new BusinessException("更新失败", ErrorCode.SERVER_INTERNAL_ERROR);
         }
     }
 

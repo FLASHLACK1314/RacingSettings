@@ -8,6 +8,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124Setup
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -146,15 +147,16 @@ public class SetupsController {
 
     /**
      * 获取详细的F124赛车设置
-     * @param request 请求
+     *
+     * @param request    请求
      * @param setupsUuid 赛车设置UUID
      * @return getF124SetupsDTO
      */
-    @GetMapping(value ="/getF124Setups",name = "获取F124赛车设置")
+    @GetMapping(value = "/getF124Setups", name = "获取F124赛车设置")
     public @NotNull ResponseEntity<BaseResponse<GetF124SetupsDTO>> getF124Setups(
             HttpServletRequest request,
             @RequestParam String setupsUuid
-    ){
+    ) {
         String userUuid = getUserUuid(request);
         GetF124SetupsDTO getF124SetupsDTO = settingsService.getF124Setups(userUuid, setupsUuid);
         return ResultUtil.success("获取赛车设置成功", getF124SetupsDTO);
@@ -177,6 +179,24 @@ public class SetupsController {
     }
 
     /**
+     * 删除F124赛车设置
+     *
+     * @param request    请求
+     * @param setupsUuid 赛车设置UUID
+     * @return 是否删除成功
+     */
+    @DeleteMapping(value = "/deleteF124Setups", name = "删除F124赛车设置")
+    public ResponseEntity<BaseResponse<String>> deleteF124Setups(
+            HttpServletRequest request,
+            @RequestParam String setupsUuid
+    ) {
+        String userUuid = getUserUuid(request);
+        log.info("删除F124赛车设置数据：{}", setupsUuid);
+        settingsService.deleteF124Setups(userUuid, setupsUuid);
+        return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
+    }
+
+    /**
      * 更新ACC赛车设置
      *
      * @param request 请求
@@ -191,6 +211,24 @@ public class SetupsController {
         String userUuid = getUserUuid(request);
         log.info("更新ACC赛车设置数据：{}", getData);
         settingsService.updateAccSetups(userUuid, getData);
+        return ResultUtil.success("更新赛车设置成功", "更新赛车设置成功");
+    }
+
+    /**
+     * 更新F124赛车设置
+     *
+     * @param request 请求
+     * @param getData 更新赛车设置数据
+     * @return 是否更新成功
+     */
+    @PostMapping(value = "/updateF124Setups", name = "更新F124赛车设置")
+    public ResponseEntity<BaseResponse<String>> updateF124Setups(
+            HttpServletRequest request,
+            @RequestBody UpdateF124SetupsVO getData
+    ) {
+        String userUuid = getUserUuid(request);
+        log.info("更新F124赛车设置数据：{}", getData);
+        settingsService.updateF124Setups(userUuid, getData);
         return ResultUtil.success("更新赛车设置成功", "更新赛车设置成功");
     }
 }
