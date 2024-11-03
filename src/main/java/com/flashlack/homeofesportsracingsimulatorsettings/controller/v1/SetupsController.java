@@ -178,23 +178,6 @@ public class SetupsController {
         return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
     }
 
-    /**
-     * 删除F124赛车设置
-     *
-     * @param request    请求
-     * @param setupsUuid 赛车设置UUID
-     * @return 是否删除成功
-     */
-    @DeleteMapping(value = "/deleteF124Setups", name = "删除F124赛车设置")
-    public ResponseEntity<BaseResponse<String>> deleteF124Setups(
-            HttpServletRequest request,
-            @RequestParam String setupsUuid
-    ) {
-        String userUuid = getUserUuid(request);
-        log.info("删除F124赛车设置数据：{}", setupsUuid);
-        settingsService.deleteF124Setups(userUuid, setupsUuid);
-        return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
-    }
 
     /**
      * 更新ACC赛车设置
