@@ -144,7 +144,9 @@ public class SettingsLogic implements SettingsService {
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
                 .last("LIMIT " + pageSize + " OFFSET " + offset)
                 .list();
-
+        if (settingsRecords.isEmpty()) {
+            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+        }
         // 3. 映射查询结果到目标DTO对象
         List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
                 .map(settingsSetupsDO -> new GetAccBaseSetupsDTO()
@@ -288,7 +290,9 @@ public class SettingsLogic implements SettingsService {
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
                 .last("LIMIT " + pageSize + " OFFSET " + offset)
                 .list();
-
+        if (settingsRecords.isEmpty()) {
+            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+        }
         // 3. 映射查询结果到目标DTO对象
         List<GetF124BaseSetupsDTO> getF124BaseSetupsDTOList = settingsRecords.stream()
                 .map(settingsSetupsDO -> new GetF124BaseSetupsDTO()

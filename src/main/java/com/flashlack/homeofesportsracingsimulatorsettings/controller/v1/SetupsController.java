@@ -158,22 +158,23 @@ public class SetupsController {
             @RequestParam String setupsUuid
     ) {
         String userUuid = getUserUuid(request);
+        log.info("获取详细的F124设置");
         GetF124SetupsDTO getF124SetupsDTO = settingsService.getF124Setups(userUuid, setupsUuid);
         return ResultUtil.success("获取赛车设置成功", getF124SetupsDTO);
     }
 
     /**
-     * 删除ACC赛车设置
+     * 删除赛车设置
      *
      * @return 是否删除成功
      */
-    @DeleteMapping(value = "/deleteAccSetups", name = "删除赛车设置")
+    @DeleteMapping(value = "/deleteSetups", name = "删除赛车设置")
     public ResponseEntity<BaseResponse<String>> deleteSetups(
             HttpServletRequest request,
             @RequestParam String setupsUuid
     ) {
         String userUuid = getUserUuid(request);
-        log.info("删除ACC赛车设置数据：{}", setupsUuid);
+        log.info("删除赛车设置数据：{}", setupsUuid);
         settingsService.deleteAccSetups(userUuid, setupsUuid);
         return ResultUtil.success("删除赛车设置成功", "删除赛车设置成功");
     }
