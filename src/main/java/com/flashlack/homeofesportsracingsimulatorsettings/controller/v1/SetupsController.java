@@ -1,9 +1,8 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccBaseSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetBaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
-import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124BaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124SetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
@@ -86,12 +85,12 @@ public class SetupsController {
     }
 
     /**
-     * 获取ACC赛车设置
+     * 获取基础赛车设置
      *
      * @return ACC赛车设置
      */
-    @GetMapping(value = "/getAccBaseSetups", name = "获取ACC赛车设置基本信息")
-    public ResponseEntity<BaseResponse<CustomPage<GetAccBaseSetupsDTO>>> getAccBaseSetups(
+    @GetMapping(value = "/getBaseSetups", name = "获取ACC赛车设置基本信息")
+    public ResponseEntity<BaseResponse<CustomPage<GetBaseSetupsDTO>>> getAccBaseSetups(
             HttpServletRequest request,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam String gameName,
@@ -99,36 +98,13 @@ public class SetupsController {
             @RequestParam String carName
     ) {
         String userUuid = getUserUuid(request);
-        CustomPage<GetAccBaseSetupsDTO> getAccSetupsDtoPage = settingsService
+        CustomPage<GetBaseSetupsDTO> getAccSetupsDtoPage = settingsService
                 .getAccBaseSetups(userUuid, gameName,
                         trackName, carName, page);
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }
 
-    /**
-     * 获取F124赛车设置
-     *
-     * @param request   请求
-     * @param page      页数
-     * @param gameName  游戏名称
-     * @param trackName 赛道名称
-     * @param carName   车辆名称
-     * @return F124赛车设置
-     */
-    @GetMapping(value = "/getF124BaseSetups", name = "获取F124赛车设置基本信息")
-    public ResponseEntity<BaseResponse<CustomPage<GetF124BaseSetupsDTO>>> getF124BaseSetups(
-            HttpServletRequest request,
-            @RequestParam(value = "page", defaultValue = "1") Integer page,
-            @RequestParam String gameName,
-            @RequestParam String trackName,
-            @RequestParam String carName
-    ) {
-        String userUuid = getUserUuid(request);
-        CustomPage<GetF124BaseSetupsDTO> getF124SetupsDtoPage = settingsService
-                .getF124BaseSetups(userUuid, gameName,
-                        trackName, carName, page);
-        return ResultUtil.success("获取赛车设置成功", getF124SetupsDtoPage);
-    }
+
 
     /**
      * 获取ACC详细赛车设置

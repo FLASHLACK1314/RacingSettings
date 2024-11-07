@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class GetAccBaseSetupsDTO {
+public class GetBaseSetupsDTO {
     String setupsUuid;
     String setupsName;
 }

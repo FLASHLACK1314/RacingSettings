@@ -114,8 +114,8 @@ public class SettingsLogic implements SettingsService {
 
 
     @Override
-    public CustomPage<GetAccBaseSetupsDTO> getAccBaseSetups(String userUuid, String gameName, String trackName,
-                                                            String carName, Integer page) {
+    public CustomPage<GetBaseSetupsDTO> getAccBaseSetups(String userUuid, String gameName, String trackName,
+                                                         String carName, Integer page) {
         // 设置每页大小
         final int pageSize = 10;
 
@@ -134,7 +134,9 @@ public class SettingsLogic implements SettingsService {
                 .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
                 .count();
-
+        if (total == 0) {
+            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+        }
         // 2. 查询当前页数据
         int offset = (page - 1) * pageSize;
         List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
@@ -148,14 +150,14 @@ public class SettingsLogic implements SettingsService {
             throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
         }
         // 3. 映射查询结果到目标DTO对象
-        List<GetAccBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
-                .map(settingsSetupsDO -> new GetAccBaseSetupsDTO()
+        List<GetBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
+                .map(settingsSetupsDO -> new GetBaseSetupsDTO()
                         .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
                         .setSetupsName(settingsSetupsDO.getSetupsName()))
                 .collect(Collectors.toList());
 
         // 4. 封装为自定义分页对象
-        CustomPage<GetAccBaseSetupsDTO> resultPage = new CustomPage<>();
+        CustomPage<GetBaseSetupsDTO> resultPage = new CustomPage<>();
         resultPage.setRecords(getAccSetupsDTOList);
         resultPage.setTotal(total);
         resultPage.setSize((long) pageSize);
@@ -260,54 +262,6 @@ public class SettingsLogic implements SettingsService {
         settingsSetupsDAO.save(settingsSetupsDO);
     }
 
-    @Override
-    public CustomPage<GetF124BaseSetupsDTO> getF124BaseSetups(String userUuid, String gameName, String trackName, String carName, Integer page) {
-        // 设置每页大小
-        final int pageSize = 10;
-
-        // 准备用户数据
-        UserDO userDO = authService.getUserByUuid(userUuid);
-        if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
-        }
-
-        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
-
-        // 1. 计算总数（不加分页限制）
-        long total = settingsSetupsDAO.lambdaQuery()
-                .eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
-                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
-                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
-                .count();
-
-        // 2. 查询当前页数据
-        int offset = (page - 1) * pageSize;
-        List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
-                .eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
-                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
-                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
-                .last("LIMIT " + pageSize + " OFFSET " + offset)
-                .list();
-        if (settingsRecords.isEmpty()) {
-            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
-        }
-        // 3. 映射查询结果到目标DTO对象
-        List<GetF124BaseSetupsDTO> getF124BaseSetupsDTOList = settingsRecords.stream()
-                .map(settingsSetupsDO -> new GetF124BaseSetupsDTO()
-                        .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
-                        .setSetupsName(settingsSetupsDO.getSetupsName()))
-                .collect(Collectors.toList());
-
-        // 4. 封装为自定义分页对象
-        CustomPage<GetF124BaseSetupsDTO> resultPage = new CustomPage<>();
-        resultPage.setRecords(getF124BaseSetupsDTOList);
-        resultPage.setTotal(total);
-        resultPage.setSize((long) pageSize);
-
-        return resultPage;
-    }
 
     @Override
     public GetF124SetupsDTO getF124Setups(String userUuid, String setupsUuid) {
@@ -332,19 +286,6 @@ public class SettingsLogic implements SettingsService {
         }
     }
 
-    @Override
-    public void deleteF124Setups(String userUuid, String setupsUuid) {
-        // 准备用户数据
-        UserDO userDO = authService.getUserByUuid(userUuid);
-        if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
-        }
-        // 删除数据
-        if (!settingsSetupsDAO.lambdaUpdate().eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).remove()) {
-            throw new BusinessException("删除失败", ErrorCode.PARAMETER_ERROR);
-        }
-    }
 
     @Override
     public void updateF124Setups(String userUuid, UpdateF124SetupsVO getData) {
