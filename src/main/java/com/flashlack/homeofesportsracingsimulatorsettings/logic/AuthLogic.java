@@ -1,15 +1,18 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.dao.RoleDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetUserLoginDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
-import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
@@ -31,7 +34,9 @@ import java.time.LocalDateTime;
 public class AuthLogic implements AuthService {
     private final EmailCodeDAO emailCodeDAO;
     private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
     private final RedisService redisService;
+
     @Override
     public String checkLoginData(LoginVO getData) {
         //检查用户是否存在
@@ -147,19 +152,31 @@ public class AuthLogic implements AuthService {
         redisService.deleteTokenFromRedis(userDO.getUserUuid());
     }
 
-    @Override
-    public void checkUserExist(String userUuid) {
-        UserDO userDO = userDAO.lambdaQuery()
-                .eq(UserDO::getUserUuid, userUuid).one();
-        if (userDO == null) {
-            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
-        }
-    }
 
     @Override
     public UserDO getUserByUuid(String userUuid) {
         return userDAO.lambdaQuery()
                 .eq(UserDO::getUserUuid, userUuid).one();
+    }
+
+    @Override
+    public GetUserLoginDTO creatLoginBackInformation(String userUuid, String token) {
+        //查询用户的角色
+        UserDO userDO = userDAO.lambdaQuery()
+                .eq(UserDO::getUserUuid, userUuid).one();
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
+        }
+        //查询角色的权限
+        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleUuid,
+                userDO.getRoleUuid()).one();
+        if (roleDO == null) {
+            throw new BusinessException("系统错误", ErrorCode.NOT_EXIST);
+        }
+        GetUserLoginDTO getUserLoginDTO = new GetUserLoginDTO();
+        getUserLoginDTO.setRoleAlias(roleDO.getRoleAlias())
+                .setToken(token);
+        return getUserLoginDTO;
     }
 
 }

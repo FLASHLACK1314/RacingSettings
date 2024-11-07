@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetUserLoginDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
@@ -38,15 +39,20 @@ public interface AuthService  {
     void checkAndFindPasswordData(
             @Valid FindPasswordVO getData);
     /**
-     * 检查用户是否存在
-     * @param  userUuid 用户UUID
-     */
-    void checkUserExist(
-            String userUuid);
-    /**
      * 通过UUID获取用户
      * @param userUuid 用户UUID
      */
     UserDO getUserByUuid(
             String userUuid);
+
+    /**
+     * 创建登录返回信息
+     * @param userUuid 用户UUID
+     * @param token token
+     * @return 登录返回信息
+     */
+    GetUserLoginDTO creatLoginBackInformation(
+            String userUuid,
+            String token
+    );
 }

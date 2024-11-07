@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetUserLoginDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.FindPasswordVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.LoginVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.RegisterVO;
@@ -53,14 +54,16 @@ public class AuthController {
      * @return 是否登录成功, 成功则返回加密后的Token
      */
     @PostMapping(value = "/login", name = "用户登录")
-    public ResponseEntity<BaseResponse<String>> userLogin(
+    public ResponseEntity<BaseResponse<GetUserLoginDTO>> userLogin(
             @Valid @RequestBody LoginVO getData) {
         //检查数据
         String userUuid = authService.checkLoginData(getData);
         String token = JwtUtil.generateToken(userUuid);
         //存入Redis
         redisService.saveTokenToRedis(userUuid, token);
-        return ResultUtil.success("登录成功", token);
+        //设置返回信息
+        GetUserLoginDTO getUserLoginDTO = authService.creatLoginBackInformation(userUuid,token);
+        return ResultUtil.success("登录成功", getUserLoginDTO);
     }
     /**
      * 用户找回修改密码
