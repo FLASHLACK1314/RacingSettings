@@ -1,6 +1,8 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.UserInformationDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangePasswordVO;
@@ -56,4 +58,19 @@ public interface UserService {
     void changeEmail(
             String userUuid,
             ChangeEmailVO getDate);
+
+    /**
+     * 获取用户信息
+     * @param userUuid 用户UUID
+     * @return 用户信息
+     */
+    UserDO getUserByUuid(
+            String userUuid);
+    /**
+     * 通过角色UUID获取角色
+     * @param roleUuid 角色UUID
+     * @return 角色
+     */
+    RoleDO getRoleByUuid(
+            String roleUuid);
 }

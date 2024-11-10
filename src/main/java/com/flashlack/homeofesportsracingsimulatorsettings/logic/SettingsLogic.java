@@ -195,6 +195,15 @@ public class SettingsLogic implements SettingsService {
         if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
+        }
+        if (settingsSetupsDO.getRecommend()){
+            throw new BusinessException("推荐设置不可删除", ErrorCode.BODY_ERROR);
+        }
         // 删除数据
         if (!settingsSetupsDAO.lambdaUpdate().eq(SettingsSetupsDO::getUserUuid, userUuid)
                 .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).remove()) {

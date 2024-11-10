@@ -1,9 +1,11 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.dao.RoleDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.UserInformationDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.EmailCodeDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeEmailVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.ChangeNickNameVO;
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserLogic implements UserService {
     private final UserDAO userDAO;
+    private final RoleDAO roleDAO;
     private final EmailCodeDAO emailCodeDAO;
 
     @Override
@@ -132,5 +135,15 @@ public class UserLogic implements UserService {
         // 进行旧邮箱删除操作
         emailCodeDAO.lambdaUpdate().eq(EmailCodeDO::getUserEmail, oldEmail).remove();
 
+    }
+
+    @Override
+    public UserDO getUserByUuid(String userUuid) {
+        return userDAO.lambdaQuery().eq(UserDO::getUserUuid, userUuid).one();
+    }
+
+    @Override
+    public RoleDO getRoleByUuid(String roleUuid) {
+        return roleDAO.lambdaQuery().eq(RoleDO::getRoleUuid, roleUuid).one();
     }
 }
