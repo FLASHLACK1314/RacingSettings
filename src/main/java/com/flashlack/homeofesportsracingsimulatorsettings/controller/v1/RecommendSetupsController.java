@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * 推荐设置控制器
+ *
  * @author FLASHLACK
  */
 @Slf4j
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class RecommendSetupsController {
     private final RedisService redisService;
     private final RecommendSetupsService recommendSetupsService;
+
     /**
      * 获取用户uuid
      *
@@ -44,9 +46,10 @@ public class RecommendSetupsController {
 
     /**
      * 管理员添加ACC赛车设置
-     * @param request 请求
+     *
+     * @param request   请求
      * @param roleAlias 角色别名
-     * @param getData 添加ACC赛车设置数据
+     * @param getData   添加ACC赛车设置数据
      * @return 是否添加成功
      */
     @PostMapping(value = "/adminAddAccSetups", name = "管理员添加ACC赛车设置")
@@ -59,14 +62,16 @@ public class RecommendSetupsController {
         //检查用户权限
         recommendSetupsService.checkRole(userUuid, roleAlias);
         //通过权限访问运行添加ACC设置
-        recommendSetupsService.adminAddAccSetups(getData,userUuid);
+        recommendSetupsService.adminAddAccSetups(getData, userUuid);
         return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
     }
+
     /**
      * 管理员添加F124赛车设置
-     * @param request 请求
+     *
+     * @param request   请求
      * @param roleAlias 角色别名
-     * @param getData 添加F124赛车设置数据
+     * @param getData   添加F124赛车设置数据
      * @return 是否添加成功
      */
     @PostMapping(value = "/adminAddF124Setups", name = "管理员添加F124赛车设置")
@@ -79,14 +84,15 @@ public class RecommendSetupsController {
         //检查用户权限
         recommendSetupsService.checkRole(userUuid, roleAlias);
         //通过权限访问运行添加F124设置
-        recommendSetupsService.adminAddF124Setups(getData,userUuid);
+        recommendSetupsService.adminAddF124Setups(getData, userUuid);
         return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
     }
 
     /**
      * 删除赛车设置
-     * @param request 请求
-     * @param roleAlias 角色别名
+     *
+     * @param request    请求
+     * @param roleAlias  角色别名
      * @param setupsUuid 设置uuid
      * @return 是否删除成功
      */
@@ -103,4 +109,24 @@ public class RecommendSetupsController {
         recommendSetupsService.deleteSetups(setupsUuid);
         return ResultUtil.success("删除成功", "删除成功");
     }
+
+    /**
+     * 用户添加ACC赛车设置
+     * @param request 请求
+     * @param setupsUuid 赛车设置uuid
+     * @param setupsName  赛车设置名称
+     * @return 是否添加成功
+     */
+    @PostMapping(value = "/userAddAccRecommendSetups", name = "用户添加ACC推荐赛车设置")
+    public ResponseEntity<BaseResponse<String>> userAddAccRecommendSetups(
+            HttpServletRequest request,
+            @RequestParam String setupsUuid,
+            @RequestParam String setupsName
+    ) {
+        String userUuid = getUserUuid(request);
+        //添加推荐赛车设置
+        recommendSetupsService.userAddAccSetups(setupsUuid, setupsName,userUuid);
+        return ResultUtil.success("添加成功", "用户添加ACC推荐赛车设置成功");
+    }
+
 }

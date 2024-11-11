@@ -184,4 +184,44 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
         log.info("数据库添加F124设置-{}", settingsSetupsDO);
         settingsSetupsDAO.save(settingsSetupsDO);
     }
+
+    @Override
+    public void userAddAccSetups(String setupsUuid,String setupsName,String userUuid) {
+        //检查用户是否存在
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        //检查设置是否存在
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("设置不存在", ErrorCode.SERVER_INTERNAL_ERROR);
+        }
+        if (!settingsSetupsDO.getRecommend()) {
+            throw new BusinessException("推荐设置无法添加", ErrorCode.SERVER_INTERNAL_ERROR);
+        }
+        log.info("用户添加推荐ACC设置名字:{}",setupsName);
+        //检查用户的的设置名字是否重复是否重复
+        if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, settingsSetupsDO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, settingsSetupsDO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, settingsSetupsDO.getCarUuid())
+                .eq(SettingsSetupsDO::getSetupsName,setupsName).exists()) {
+            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+        }
+        //转换数据
+        SettingsSetupsDO userSetupsDO = new SettingsSetupsDO();
+        userSetupsDO.setSetupsUuid(UUIDUtils.generateUuid())
+                .setGameUuid(settingsSetupsDO.getGameUuid())
+                .setTrackUuid(settingsSetupsDO.getTrackUuid())
+                .setCarUuid(settingsSetupsDO.getCarUuid())
+                .setUserUuid(userUuid)
+                .setSetupsName(setupsName)
+                .setSetups(settingsSetupsDO.getSetups())
+                .setRecommend(false);
+        //插入数据
+        log.info("用户数据库添加推荐ACC设置-{}", userSetupsDO);
+        settingsSetupsDAO.save(userSetupsDO);
+    }
 }

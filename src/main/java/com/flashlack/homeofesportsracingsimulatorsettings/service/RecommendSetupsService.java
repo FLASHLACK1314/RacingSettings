@@ -45,4 +45,15 @@ public interface RecommendSetupsService {
     void adminAddF124Setups(
             AddF124SetupsVO getData,
             String userUuid);
+
+    /**
+     * 用户添加ACC赛车设置
+     * @param setupsUuid 设置UUID
+     * @param userName 用户名
+     * @param userUuid 用户UUID
+     */
+    void userAddAccSetups(
+            String setupsUuid,
+            String userName,
+            String userUuid);
 }
