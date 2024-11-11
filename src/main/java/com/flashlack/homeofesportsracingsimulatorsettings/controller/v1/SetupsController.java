@@ -87,9 +87,9 @@ public class SetupsController {
     /**
      * 获取基础赛车设置
      *
-     * @return ACC赛车设置
+     * @return 赛车设置
      */
-    @GetMapping(value = "/getBaseSetups", name = "获取ACC赛车设置基本信息")
+    @GetMapping(value = "/getBaseSetups", name = "获取赛车设置基本信息")
     public ResponseEntity<BaseResponse<CustomPage<GetBaseSetupsDTO>>> getAccBaseSetups(
             HttpServletRequest request,
             @RequestParam(value = "page", defaultValue = "1") Integer page,

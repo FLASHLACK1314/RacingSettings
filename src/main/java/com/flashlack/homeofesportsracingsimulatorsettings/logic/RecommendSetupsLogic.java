@@ -8,6 +8,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
@@ -148,5 +149,39 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
         }
         //删除设置
         settingsSetupsDAO.removeById(setupsUuid);
+    }
+
+    @Override
+    public void adminAddF124Setups(AddF124SetupsVO getData, String userUuid) {
+        // 准备用户数据
+        UserDO userDO = authService.getUserByUuid(userUuid);
+        if (userDO == null) {
+            throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
+        }
+        // 准备游戏、赛道、车辆数据
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(getData.getGameName(),
+                getData.getTrackName(), getData.getCarName());
+        log.info("F124 游戏、赛道、车辆uuid-{}", gameTrackCarUuidDTO);
+        // 检查用户的的设置名字是否重复是否重复
+        if (settingsSetupsDAO.lambdaQuery().eq(SettingsSetupsDO::getUserUuid, userUuid)
+                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .eq(SettingsSetupsDO::getSetupsName, getData.getSetupsName()).one() != null) {
+            throw new BusinessException("设置名字重复", ErrorCode.BODY_ERROR);
+        }
+        // 转换数据
+        SettingsSetupsDO settingsSetupsDO = new SettingsSetupsDO();
+        settingsSetupsDO.setSetupsUuid(UUIDUtils.generateUuid())
+                .setGameUuid(gameTrackCarUuidDTO.getGameUuid())
+                .setTrackUuid(gameTrackCarUuidDTO.getTrackUuid())
+                .setCarUuid(gameTrackCarUuidDTO.getCarUuid())
+                .setUserUuid(userUuid)
+                .setSetupsName(getData.getSetupsName())
+                .setSetups(gson.toJson(getData.getF124SetupsDTO()))
+                .setRecommend(true);
+        // 插入数据
+        log.info("数据库添加F124设置-{}", settingsSetupsDO);
+        settingsSetupsDAO.save(settingsSetupsDO);
     }
 }

@@ -1,6 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
@@ -59,7 +60,27 @@ public class RecommendSetupsController {
         recommendSetupsService.checkRole(userUuid, roleAlias);
         //通过权限访问运行添加ACC设置
         recommendSetupsService.adminAddAccSetups(getData,userUuid);
-        return ResultUtil.success("添加成功", "添加成功");
+        return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
+    }
+    /**
+     * 管理员添加F124赛车设置
+     * @param request 请求
+     * @param roleAlias 角色别名
+     * @param getData 添加F124赛车设置数据
+     * @return 是否添加成功
+     */
+    @PostMapping(value = "/adminAddF124Setups", name = "管理员添加F124赛车设置")
+    public ResponseEntity<BaseResponse<String>> adminAddF124Setups(
+            HttpServletRequest request,
+            @RequestParam String roleAlias,
+            @RequestBody AddF124SetupsVO getData
+    ) {
+        String userUuid = getUserUuid(request);
+        //检查用户权限
+        recommendSetupsService.checkRole(userUuid, roleAlias);
+        //通过权限访问运行添加F124设置
+        recommendSetupsService.adminAddF124Setups(getData,userUuid);
+        return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
     }
 
     /**
