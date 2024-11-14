@@ -1,9 +1,12 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetBaseSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
+import com.flashlack.homeofesportsracingsimulatorsettings.service.SettingsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.BaseResponse;
 import com.xlf.utility.ErrorCode;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 public class RecommendSetupsController {
     private final RedisService redisService;
     private final RecommendSetupsService recommendSetupsService;
+    private final SettingsService settingsService;
 
     /**
      * 获取用户uuid
@@ -62,7 +66,7 @@ public class RecommendSetupsController {
         //检查用户权限
         recommendSetupsService.checkRole(userUuid, roleAlias);
         //通过权限访问运行添加ACC设置
-        recommendSetupsService.adminAddAccSetups(getData, userUuid);
+        settingsService.addAccSetups(userUuid, getData, true);
         return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
     }
 
@@ -84,19 +88,19 @@ public class RecommendSetupsController {
         //检查用户权限
         recommendSetupsService.checkRole(userUuid, roleAlias);
         //通过权限访问运行添加F124设置
-        recommendSetupsService.adminAddF124Setups(getData, userUuid);
+        settingsService.addF124Setups(userUuid, getData, true);
         return ResultUtil.success("添加成功", "管理员添加推荐赛车设置成功");
     }
 
     /**
-     * 删除赛车设置
+     * 管理员删除赛车设置
      *
      * @param request    请求
      * @param roleAlias  角色别名
      * @param setupsUuid 设置uuid
      * @return 是否删除成功
      */
-    @DeleteMapping(value = "/deleteSetups", name = "删除赛车设置")
+    @DeleteMapping(value = "/deleteSetups", name = "管理员删除赛车设置")
     public ResponseEntity<BaseResponse<String>> deleteSetups(
             HttpServletRequest request,
             @RequestParam String roleAlias,
@@ -111,13 +115,14 @@ public class RecommendSetupsController {
     }
 
     /**
-     * 用户添加ACC赛车设置
-     * @param request 请求
+     * 用户添加赛车设置
+     *
+     * @param request    请求
      * @param setupsUuid 赛车设置uuid
-     * @param setupsName  赛车设置名称
+     * @param setupsName 赛车设置名称
      * @return 是否添加成功
      */
-    @PostMapping(value = "/userAddAccRecommendSetups", name = "用户添加ACC推荐赛车设置")
+    @PostMapping(value = "/userAddRecommendSetups", name = "用户添加荐赛车设置")
     public ResponseEntity<BaseResponse<String>> userAddAccRecommendSetups(
             HttpServletRequest request,
             @RequestParam String setupsUuid,
@@ -125,8 +130,32 @@ public class RecommendSetupsController {
     ) {
         String userUuid = getUserUuid(request);
         //添加推荐赛车设置
-        recommendSetupsService.userAddAccSetups(setupsUuid, setupsName,userUuid);
-        return ResultUtil.success("添加成功", "用户添加ACC推荐赛车设置成功");
+        recommendSetupsService.userAddAccSetups(setupsUuid, setupsName, userUuid);
+        return ResultUtil.success("添加成功", "用户添加推荐赛车设置成功");
+    }
+
+    /**
+     * 获取推荐赛车设置基本信息
+     * @param request 请求
+     * @param page 页数
+     * @param gameName 游戏名称
+     * @param trackName 赛道名称
+     * @param carName 赛车名称
+     * @return 赛车设置
+     */
+    @GetMapping(value = "/getRecommendBaseSetups", name = "获取推荐赛车设置基本信息")
+    public ResponseEntity<BaseResponse<CustomPage<GetBaseSetupsDTO>>> getAccBaseSetups(
+            HttpServletRequest request,
+            @RequestParam(value = "page", defaultValue = "1") Integer page,
+            @RequestParam String gameName,
+            @RequestParam String trackName,
+            @RequestParam String carName
+    ) {
+        String userUuid = getUserUuid(request);
+        CustomPage<GetBaseSetupsDTO> getAccSetupsDtoPage = settingsService
+                .getBaseSetups(userUuid, gameName,
+                        trackName, carName, page, true);
+        return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }
 
 }

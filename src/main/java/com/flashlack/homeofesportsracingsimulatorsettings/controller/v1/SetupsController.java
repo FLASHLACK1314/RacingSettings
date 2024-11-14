@@ -62,7 +62,7 @@ public class SetupsController {
     ) {
         String userUuid = getUserUuid(request);
         log.info("添加ACC赛车设置数据：{}", getData);
-        settingsService.addAccSetups(userUuid, getData);
+        settingsService.addAccSetups(userUuid, getData,false);
         return ResultUtil.success("添加赛车设置成功", "添加赛车设置成功");
     }
 
@@ -80,7 +80,7 @@ public class SetupsController {
     ) {
         String userUuid = getUserUuid(request);
         log.info("添加F124赛车设置数据：{}", getData);
-        settingsService.addF124Setups(userUuid, getData);
+        settingsService.addF124Setups(userUuid, getData, false);
         return ResultUtil.success("添加赛车设置成功", "添加赛车设置成功");
     }
 
@@ -99,8 +99,8 @@ public class SetupsController {
     ) {
         String userUuid = getUserUuid(request);
         CustomPage<GetBaseSetupsDTO> getAccSetupsDtoPage = settingsService
-                .getAccBaseSetups(userUuid, gameName,
-                        trackName, carName, page);
+                .getBaseSetups(userUuid, gameName,
+                        trackName, carName, page,false);
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }
 

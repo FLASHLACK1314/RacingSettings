@@ -23,7 +23,9 @@ public interface SettingsService {
      */
     void addAccSetups(
             String userUuid,
-            AddAccSetupsVO getData);
+            AddAccSetupsVO getData,
+            Boolean isRecommend
+    );
 
     /**
      * 获取ACC基础赛车设置信息
@@ -35,12 +37,13 @@ public interface SettingsService {
      * @param page      页数
      * @return 赛车设置链表
      */
-    CustomPage<GetBaseSetupsDTO> getAccBaseSetups(
+    CustomPage<GetBaseSetupsDTO> getBaseSetups(
             String userUuid,
             String gameName,
             String trackName,
             String carName,
-            Integer page
+            Integer page,
+            Boolean isRecommend
     );
 
     /**
@@ -75,14 +78,16 @@ public interface SettingsService {
             UpdateAccSetupsVO getData);
 
     /**
-     * 添加F1 2021赛车设置
+     * 添加F1 2024赛车设置
      *
      * @param userUuid 用户UUID
      * @param getData  添加赛车设置数据
      */
     void addF124Setups(
             String userUuid,
-            AddF124SetupsVO getData);
+            AddF124SetupsVO getData,
+            Boolean isRecommend
+    );
 
 
     /**

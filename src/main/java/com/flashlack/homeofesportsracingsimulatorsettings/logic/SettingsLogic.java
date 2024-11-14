@@ -80,7 +80,7 @@ public class SettingsLogic implements SettingsService {
     }
 
     @Override
-    public void addAccSetups(String userUuid, AddAccSetupsVO getData) {
+    public void addAccSetups(String userUuid, AddAccSetupsVO getData,Boolean isRecommend) {
         //准备用户数据
         UserDO userDO = authService.getUserByUuid(userUuid);
         if (userDO == null) {
@@ -107,6 +107,10 @@ public class SettingsLogic implements SettingsService {
                 .setUserUuid(userUuid)
                 .setSetupsName(getData.getSetupsName())
                 .setSetups(gson.toJson(getData.getAccSetupsDTO()));
+        if (isRecommend){
+            log.info("管理员添加ACC推荐设置");
+            settingsSetupsDO.setRecommend(true);
+        }
         //插入数据
         log.info("数据库添加ACC设置-{}", settingsSetupsDO);
         settingsSetupsDAO.save(settingsSetupsDO);
@@ -114,8 +118,8 @@ public class SettingsLogic implements SettingsService {
 
 
     @Override
-    public CustomPage<GetBaseSetupsDTO> getAccBaseSetups(String userUuid, String gameName, String trackName,
-                                                         String carName, Integer page) {
+    public CustomPage<GetBaseSetupsDTO> getBaseSetups(String userUuid, String gameName, String trackName,
+                                                      String carName, Integer page,Boolean isRecommend) {
         // 设置每页大小
         final int pageSize = 10;
 
@@ -126,13 +130,18 @@ public class SettingsLogic implements SettingsService {
         }
 
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
-
+        if (isRecommend){
+            log.info("获取推荐设置");
+        }else{
+            log.info("获取用户设置");
+        }
         // 1. 计算总数（不加分页限制）
         long total = settingsSetupsDAO.lambdaQuery()
                 .eq(SettingsSetupsDO::getUserUuid, userUuid)
                 .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
                 .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
                 .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .eq(SettingsSetupsDO::getRecommend,isRecommend)
                 .count();
         if (total == 0) {
             throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
@@ -239,7 +248,7 @@ public class SettingsLogic implements SettingsService {
     }
 
     @Override
-    public void addF124Setups(String userUuid, AddF124SetupsVO getData) {
+    public void addF124Setups(String userUuid, AddF124SetupsVO getData, Boolean isRecommend) {
         // 准备用户数据
         UserDO userDO = authService.getUserByUuid(userUuid);
         if (userDO == null) {
@@ -266,6 +275,10 @@ public class SettingsLogic implements SettingsService {
                 .setUserUuid(userUuid)
                 .setSetupsName(getData.getSetupsName())
                 .setSetups(gson.toJson(getData.getF124SetupsDTO()));
+        if (isRecommend){
+            log.info("管理员添加F124推荐设置");
+            settingsSetupsDO.setRecommend(true);
+        }
         // 插入数据
         log.info("数据库添加F124设置-{}", settingsSetupsDO);
         settingsSetupsDAO.save(settingsSetupsDO);
