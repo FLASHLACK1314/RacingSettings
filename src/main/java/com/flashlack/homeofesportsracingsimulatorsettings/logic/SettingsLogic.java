@@ -80,7 +80,7 @@ public class SettingsLogic implements SettingsService {
     }
 
     @Override
-    public void addAccSetups(String userUuid, AddAccSetupsVO getData,Boolean isRecommend) {
+    public void addAccSetups(String userUuid, AddAccSetupsVO getData, Boolean isRecommend) {
         //准备用户数据
         UserDO userDO = authService.getUserByUuid(userUuid);
         if (userDO == null) {
@@ -107,7 +107,7 @@ public class SettingsLogic implements SettingsService {
                 .setUserUuid(userUuid)
                 .setSetupsName(getData.getSetupsName())
                 .setSetups(gson.toJson(getData.getAccSetupsDTO()));
-        if (isRecommend){
+        if (isRecommend) {
             log.info("管理员添加ACC推荐设置");
             settingsSetupsDO.setRecommend(true);
         }
@@ -119,7 +119,7 @@ public class SettingsLogic implements SettingsService {
 
     @Override
     public CustomPage<GetBaseSetupsDTO> getBaseSetups(String userUuid, String gameName, String trackName,
-                                                      String carName, Integer page,Boolean isRecommend) {
+                                                      String carName, Integer page, Boolean isRecommend) {
         // 设置每页大小
         final int pageSize = 10;
 
@@ -129,49 +129,87 @@ public class SettingsLogic implements SettingsService {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
 
-        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName, trackName, carName);
-        if (isRecommend){
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName,
+                trackName, carName);
+        if (isRecommend) {
             log.info("获取推荐设置");
-        }else{
+            // 1. 计算总数（不加分页限制）
+            long total = settingsSetupsDAO.lambdaQuery()
+                    .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                    .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                    .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                    .eq(SettingsSetupsDO::getRecommend, true)
+                    .count();
+            if (total == 0) {
+                throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+            }
+            // 2. 查询当前页数据
+            int offset = (page - 1) * pageSize;
+            List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
+                    .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                    .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                    .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                    .eq(SettingsSetupsDO::getRecommend, true)
+                    .last("LIMIT " + pageSize + " OFFSET " + offset)
+                    .list();
+            if (settingsRecords.isEmpty()) {
+                throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+            }
+            // 3. 映射查询结果到目标DTO对象
+            List<GetBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
+                    .map(settingsSetupsDO -> new GetBaseSetupsDTO()
+                            .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                            .setSetupsName(settingsSetupsDO.getSetupsName()))
+                    .collect(Collectors.toList());
+
+            // 4. 封装为自定义分页对象
+            CustomPage<GetBaseSetupsDTO> resultPage = new CustomPage<>();
+            resultPage.setRecords(getAccSetupsDTOList);
+            resultPage.setTotal(total);
+            resultPage.setSize((long) pageSize);
+
+            return resultPage;
+        } else {
             log.info("获取用户设置");
-        }
-        // 1. 计算总数（不加分页限制）
-        long total = settingsSetupsDAO.lambdaQuery()
-                .eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
-                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
-                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
-                .eq(SettingsSetupsDO::getRecommend,isRecommend)
-                .count();
-        if (total == 0) {
-            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
-        }
-        // 2. 查询当前页数据
-        int offset = (page - 1) * pageSize;
-        List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
-                .eq(SettingsSetupsDO::getUserUuid, userUuid)
-                .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
-                .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
-                .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
-                .last("LIMIT " + pageSize + " OFFSET " + offset)
-                .list();
-        if (settingsRecords.isEmpty()) {
-            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
-        }
-        // 3. 映射查询结果到目标DTO对象
-        List<GetBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
-                .map(settingsSetupsDO -> new GetBaseSetupsDTO()
-                        .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
-                        .setSetupsName(settingsSetupsDO.getSetupsName()))
-                .collect(Collectors.toList());
+            // 1. 计算总数（不加分页限制）
+            long total = settingsSetupsDAO.lambdaQuery()
+                    .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                    .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                    .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                    .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                    .eq(SettingsSetupsDO::getRecommend, false)
+                    .count();
+            if (total == 0) {
+                throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+            }
+            // 2. 查询当前页数据
+            int offset = (page - 1) * pageSize;
+            List<SettingsSetupsDO> settingsRecords = settingsSetupsDAO.lambdaQuery()
+                    .eq(SettingsSetupsDO::getUserUuid, userUuid)
+                    .eq(SettingsSetupsDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                    .eq(SettingsSetupsDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                    .eq(SettingsSetupsDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                    .eq(SettingsSetupsDO::getRecommend, false)
+                    .last("LIMIT " + pageSize + " OFFSET " + offset)
+                    .list();
+            if (settingsRecords.isEmpty()) {
+                throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+            }
+            // 3. 映射查询结果到目标DTO对象
+            List<GetBaseSetupsDTO> getAccSetupsDTOList = settingsRecords.stream()
+                    .map(settingsSetupsDO -> new GetBaseSetupsDTO()
+                            .setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                            .setSetupsName(settingsSetupsDO.getSetupsName()))
+                    .collect(Collectors.toList());
+            // 4. 封装为自定义分页对象
+            CustomPage<GetBaseSetupsDTO> resultPage = new CustomPage<>();
+            resultPage.setRecords(getAccSetupsDTOList);
+            resultPage.setTotal(total);
+            resultPage.setSize((long) pageSize);
 
-        // 4. 封装为自定义分页对象
-        CustomPage<GetBaseSetupsDTO> resultPage = new CustomPage<>();
-        resultPage.setRecords(getAccSetupsDTOList);
-        resultPage.setTotal(total);
-        resultPage.setSize((long) pageSize);
+            return resultPage;
+        }
 
-        return resultPage;
     }
 
     @Override
@@ -210,7 +248,7 @@ public class SettingsLogic implements SettingsService {
         if (settingsSetupsDO == null) {
             throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
         }
-        if (settingsSetupsDO.getRecommend()){
+        if (settingsSetupsDO.getRecommend()) {
             throw new BusinessException("推荐设置不可删除", ErrorCode.BODY_ERROR);
         }
         // 删除数据
@@ -275,7 +313,7 @@ public class SettingsLogic implements SettingsService {
                 .setUserUuid(userUuid)
                 .setSetupsName(getData.getSetupsName())
                 .setSetups(gson.toJson(getData.getF124SetupsDTO()));
-        if (isRecommend){
+        if (isRecommend) {
             log.info("管理员添加F124推荐设置");
             settingsSetupsDO.setRecommend(true);
         }
