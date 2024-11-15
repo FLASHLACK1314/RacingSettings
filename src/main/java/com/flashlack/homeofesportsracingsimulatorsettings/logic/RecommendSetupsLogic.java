@@ -2,6 +2,8 @@ package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.AccSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsSetupsDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
@@ -9,6 +11,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.service.AuthService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.UserService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
+import com.google.gson.Gson;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 public class RecommendSetupsLogic implements RecommendSetupsService {
     private final UserService userService;
     private final AuthService authService;
+    private final Gson gson;
     private final SettingsSetupsDAO settingsSetupsDAO;
 
 
@@ -108,5 +112,23 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
         //插入数据
         log.info("用户数据库添加推荐ACC设置-{}", userSetupsDO);
         settingsSetupsDAO.save(userSetupsDO);
+    }
+
+    @Override
+    public GetAccSetupsDTO getRecommendAccSetups(String setupsUuid) {
+        //检查设置是否存在
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("设置不存在", ErrorCode.BODY_ERROR);
+        }
+        if (!settingsSetupsDO.getRecommend()) {
+            throw new BusinessException("推荐设置无法获取", ErrorCode.BODY_ERROR);
+        }
+        GetAccSetupsDTO getAccSetupsDTO = new GetAccSetupsDTO();
+        getAccSetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                .setSetupsName(settingsSetupsDO.getSetupsName())
+                .setAccSetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), AccSetupsDTO.class));
+        return getAccSetupsDTO;
     }
 }

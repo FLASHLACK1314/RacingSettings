@@ -1,5 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
+
 /**
  * 推荐设置服务接口
  *
@@ -36,4 +38,7 @@ public interface RecommendSetupsService {
             String setupsUuid,
             String userName,
             String userUuid);
+
+    GetAccSetupsDTO getRecommendAccSetups(
+            String setupsUuid);
 }
