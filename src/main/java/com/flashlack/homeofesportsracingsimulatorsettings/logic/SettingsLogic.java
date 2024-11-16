@@ -214,6 +214,9 @@ public class SettingsLogic implements SettingsService {
 
     @Override
     public GetAccSetupsDTO getAccSetups(String userUuid, String setupsUuid) {
+        if (userUuid == null || setupsUuid == null) {
+            throw new BusinessException("参数错误", ErrorCode.PARAMETER_ERROR);
+        }
         // 准备用户数据
         UserDO userDO = authService.getUserByUuid(userUuid);
         if (userDO == null) {

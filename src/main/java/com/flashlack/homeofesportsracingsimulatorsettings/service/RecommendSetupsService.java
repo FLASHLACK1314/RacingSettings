@@ -39,6 +39,11 @@ public interface RecommendSetupsService {
             String userName,
             String userUuid);
 
+    /**
+     * 获取推荐ACC赛车设置
+     * @param setupsUuid 设置UUID
+     * @return ACC赛车设置
+     */
     GetAccSetupsDTO getRecommendAccSetups(
             String setupsUuid);
 }

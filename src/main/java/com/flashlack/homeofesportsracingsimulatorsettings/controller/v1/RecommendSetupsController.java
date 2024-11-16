@@ -160,6 +160,12 @@ public class RecommendSetupsController {
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDtoPage);
     }
 
+    /**
+     * 获取推荐ACC赛车设置
+     * @param request 请求
+     * @param setupsUuid 赛车设置uuid
+     * @return ACC赛车设置
+     */
     @GetMapping(value = "/getRecommendACCSetups", name = "获取推荐ACC赛车设置")
     public ResponseEntity<BaseResponse<GetAccSetupsDTO>> getAccSetups(
             HttpServletRequest request,
