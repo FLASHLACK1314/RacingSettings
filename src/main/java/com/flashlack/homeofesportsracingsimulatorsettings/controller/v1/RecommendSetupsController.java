@@ -101,7 +101,7 @@ public class RecommendSetupsController {
      * @param setupsUuid 设置uuid
      * @return 是否删除成功
      */
-    @DeleteMapping(value = "/deleteSetups", name = "管理员删除赛车设置")
+    @DeleteMapping(value = "/adminDeleteSetups", name = "管理员删除赛车设置")
     public ResponseEntity<BaseResponse<String>> deleteSetups(
             HttpServletRequest request,
             @RequestParam String roleAlias,
@@ -110,6 +110,7 @@ public class RecommendSetupsController {
         String userUuid = getUserUuid(request);
         //检查用户权限
         recommendSetupsService.checkRole(userUuid, roleAlias);
+        log.info("权限检查完毕");
         //通过权限访问运行删除赛车设置
         recommendSetupsService.deleteSetups(setupsUuid);
         return ResultUtil.success("删除成功", "删除成功");

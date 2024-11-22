@@ -100,6 +100,12 @@ public class UserLogic implements UserService {
         if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.HEADER_ERROR);
         }
+        //检查邮箱是否重复
+        UserDO emailUserDO = userDAO.lambdaQuery().eq(UserDO::getUserEmail,
+                getDate.getNewEmail()).one();
+        if (emailUserDO != null) {
+            throw new BusinessException("邮箱已存在", ErrorCode.BODY_ERROR);
+        }
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
                 .eq(EmailCodeDO::getUserEmail, userDO.getUserEmail()).one();
         if (emailCodeDO == null) {
