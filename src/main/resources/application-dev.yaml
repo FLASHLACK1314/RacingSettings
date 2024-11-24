@@ -8,7 +8,7 @@ spring:
     username:
     password:
     host:
-    port: 25
+    port:
   data:
       redis:
         port: 6379
