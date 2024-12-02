@@ -46,4 +46,5 @@ public interface RecommendSetupsService {
      */
     GetAccSetupsDTO getRecommendAccSetups(
             String setupsUuid);
+
 }
