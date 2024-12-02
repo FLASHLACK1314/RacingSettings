@@ -3,6 +3,7 @@ package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetBaseSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124SetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddAccSetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddF124SetupsVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
@@ -178,5 +179,23 @@ public class RecommendSetupsController {
         }
         GetAccSetupsDTO getAccSetupsDTO = recommendSetupsService.getRecommendAccSetups(setupsUuid);
         return ResultUtil.success("获取赛车设置成功", getAccSetupsDTO);
+    }
+    /**
+     * 获取推荐F124赛车设置
+     * @param request 请求
+     * @param setupsUuid 赛车设置uuid
+     * @return F124赛车设置
+     */
+    @GetMapping(value = "/getRecommendF124Setups", name = "获取推荐F124赛车设置")
+    public ResponseEntity<BaseResponse<GetF124SetupsDTO>> getF124Setups(
+            HttpServletRequest request,
+            @RequestParam String setupsUuid
+    ) {
+        String userUuid = UUIDUtils.getUuidByRequest(request);
+        if (redisService.getTokenFromRedis(userUuid) == null) {
+            throw new BusinessException("未登录", ErrorCode.HEADER_ERROR);
+        }
+        GetF124SetupsDTO getF124SetupsDTO = recommendSetupsService.getRecommendF124Setups(setupsUuid);
+        return ResultUtil.success("获取赛车设置成功", getF124SetupsDTO);
     }
 }

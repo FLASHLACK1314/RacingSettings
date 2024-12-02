@@ -1,6 +1,7 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.service;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124SetupsDTO;
 
 /**
  * 推荐设置服务接口
@@ -45,5 +46,11 @@ public interface RecommendSetupsService {
      * @return ACC赛车设置
      */
     GetAccSetupsDTO getRecommendAccSetups(
+            String setupsUuid);
+    /**
+     * 用户添加F124赛车设置
+     * @param setupsUuid 设置UUID
+     */
+    GetF124SetupsDTO getRecommendF124Setups(
             String setupsUuid);
 }

@@ -3,7 +3,9 @@ package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.AccSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.F124SetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetAccSetupsDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetF124SetupsDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.RoleDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsSetupsDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.UserDO;
@@ -130,5 +132,23 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
                 .setSetupsName(settingsSetupsDO.getSetupsName())
                 .setAccSetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), AccSetupsDTO.class));
         return getAccSetupsDTO;
+    }
+
+    @Override
+    public GetF124SetupsDTO getRecommendF124Setups(String setupsUuid) {
+        //检查设置是否存在
+        SettingsSetupsDO settingsSetupsDO = settingsSetupsDAO.lambdaQuery()
+                .eq(SettingsSetupsDO::getSetupsUuid, setupsUuid).one();
+        if (settingsSetupsDO == null) {
+            throw new BusinessException("设置不存在", ErrorCode.BODY_ERROR);
+        }
+        if (!settingsSetupsDO.getRecommend()) {
+            throw new BusinessException("推荐设置无法获取", ErrorCode.BODY_ERROR);
+        }
+        GetF124SetupsDTO getF124SetupsDTO = new GetF124SetupsDTO();
+        getF124SetupsDTO.setSetupsUuid(settingsSetupsDO.getSetupsUuid())
+                .setSetupsName(settingsSetupsDO.getSetupsName())
+                .setF124SetupsDTO(gson.fromJson(settingsSetupsDO.getSetups(), F124SetupsDTO.class));
+        return getF124SetupsDTO;
     }
 }
