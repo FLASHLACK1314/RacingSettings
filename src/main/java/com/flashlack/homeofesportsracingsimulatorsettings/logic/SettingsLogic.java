@@ -1,9 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
-import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsCarDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsSetupsDAO;
-import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.dao.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.*;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.*;
@@ -22,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +35,7 @@ public class SettingsLogic implements SettingsService {
     private final SettingsGameDAO settingsGameDAO;
     private final SettingsTrackDAO settingsTrackDAO;
     private final Gson gson;
+    private final RoleDAO roleDAO;
 
     /**
      * 通过游戏名、赛道名、车辆名获取游戏、赛道、车辆的uuid
@@ -251,8 +250,11 @@ public class SettingsLogic implements SettingsService {
         if (settingsSetupsDO == null) {
             throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
         }
+        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleAlias, "admin").one();
         if (settingsSetupsDO.getRecommend()) {
-            throw new BusinessException("推荐设置不可删除", ErrorCode.BODY_ERROR);
+            if (!Objects.equals(userDO.getRoleUuid(), roleDO.getRoleUuid())) {
+                throw new BusinessException("推荐设置不可删除", ErrorCode.BODY_ERROR);
+            }
         }
         // 删除数据
         if (!settingsSetupsDAO.lambdaUpdate().eq(SettingsSetupsDO::getUserUuid, userUuid)
