@@ -250,7 +250,7 @@ public class SettingsLogic implements SettingsService {
         if (settingsSetupsDO == null) {
             throw new BusinessException("赛车设置不存在", ErrorCode.BODY_ERROR);
         }
-        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleAlias, "admin").one();
+        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleAlias, "管理员").one();
         if (settingsSetupsDO.getRecommend()) {
             if (!Objects.equals(userDO.getRoleUuid(), roleDO.getRoleUuid())) {
                 throw new BusinessException("推荐设置不可删除", ErrorCode.BODY_ERROR);
