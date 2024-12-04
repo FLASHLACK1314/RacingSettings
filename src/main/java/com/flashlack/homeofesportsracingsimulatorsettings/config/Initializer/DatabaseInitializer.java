@@ -47,6 +47,7 @@ public class DatabaseInitializer {
         tableSqlMap.put("settings_car", "templates/settings_car.sql");
         tableSqlMap.put("settings_track", "templates/settings_track.sql");
         tableSqlMap.put("settings_setups", "templates/settings_setups.sql");
+        tableSqlMap.put("settings_teaching", "templates/settings_teaching.sql");
         tableSqlMap.put("system_constants", "templates/system_constants.sql");
     }
 
