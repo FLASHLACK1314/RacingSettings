@@ -68,4 +68,25 @@ public class TeachingController {
         teachingService.adminAddTeaching(userUuid, getData);
         return ResultUtil.success("添加赛车设置成功", "添加赛车设置成功");
     }
+
+    /**
+     * 管理员删除教程
+     * @param roleAlias 角色别名
+     * @param teachingUuid 教程uuid
+     * @param request 请求
+     * @return 是否删除成功
+     */
+    @DeleteMapping(value = "/adminDeleteTeaching", name = "管理员删除教程")
+    public ResponseEntity<BaseResponse<String>> adminDeleteTeaching(
+            @RequestParam String roleAlias,
+            @RequestParam String teachingUuid,
+            HttpServletRequest request
+    ) {
+        String userUuid = getUserUuid(request);
+        //检查用户权限
+        recommendSetupsService.checkRole(userUuid, roleAlias);
+        //删除教程
+        teachingService.adminDeleteTeaching(teachingUuid);
+        return ResultUtil.success("删除教程成功", "删除教程成功");
+    }
 }

@@ -109,4 +109,16 @@ public class TeachingLogic implements TeachingService {
             throw new BusinessException("教学url为空", ErrorCode.PARAMETER_ERROR);
         }
     }
+
+    @Override
+    public void adminDeleteTeaching(String teachingUuid) {
+        log.info("管理员删除教学");
+        SettingsTeachingDO settingsTeachingDO = settingsTeachingDAO.lambdaQuery()
+                .eq(SettingsTeachingDO::getTeachingUuid, teachingUuid).one();
+        if (settingsTeachingDO == null) {
+            throw new BusinessException("教学不存在", ErrorCode.BODY_ERROR);
+        }
+        log.info("管理员删除教学「数据库操作」");
+        settingsTeachingDAO.removeById(teachingUuid);
+    }
 }

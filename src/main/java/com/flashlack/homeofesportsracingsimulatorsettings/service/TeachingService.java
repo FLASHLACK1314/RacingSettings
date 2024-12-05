@@ -22,4 +22,11 @@ public interface TeachingService {
      */
     void checkAddTeachingData(
             AddTeachingVO getData);
+
+    /**
+     * 管理员删除教学
+     * @param teachingUuid 教学uuid
+     */
+    void adminDeleteTeaching(
+            String teachingUuid);
 }
