@@ -82,12 +82,18 @@ public class TeachingLogic implements TeachingService {
     @Override
     public void adminAddTeaching(String userUuid, AddTeachingVO getData) {
         log.info("管理员添加教学");
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(getData.getGameName(),
+                getData.getTrackName(), getData.getCarName());
         SettingsTeachingDO settingsTeachingDO = settingsTeachingDAO.lambdaQuery()
-                .eq(SettingsTeachingDO::getTeachingName, getData.getTeachingName()).one();
+                .eq(SettingsTeachingDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())
+                .eq(SettingsTeachingDO::getTrackUuid, gameTrackCarUuidDTO.getTrackUuid())
+                .eq(SettingsTeachingDO::getCarUuid, gameTrackCarUuidDTO.getCarUuid())
+                .eq(SettingsTeachingDO::getTeachingName, getData.getTeachingName())
+                .one();
         if (settingsTeachingDO != null) {
             throw new BusinessException("教学已存在", ErrorCode.BODY_ERROR);
         }
-        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(getData.getGameName(), getData.getTrackName(), getData.getCarName());
+
         SettingsTeachingDO addSettingsTeachingDO = new SettingsTeachingDO();
         addSettingsTeachingDO.setTeachingUuid(UUIDUtils.generateUuid())
                 .setGameUuid(gameTrackCarUuidDTO.getGameUuid())
@@ -168,7 +174,6 @@ public class TeachingLogic implements TeachingService {
         final int pageSize = 10;
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(gameName,
                 trackName, carName);
-        log.info("获取推荐设置");
         // 1. 计算总数（不加分页限制）
         long total = settingsTeachingDAO.lambdaQuery()
                 .eq(SettingsTeachingDO::getGameUuid, gameTrackCarUuidDTO.getGameUuid())

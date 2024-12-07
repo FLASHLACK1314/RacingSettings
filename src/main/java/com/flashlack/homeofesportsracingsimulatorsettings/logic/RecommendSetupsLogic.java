@@ -45,8 +45,9 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
         if (roleAlias == null || roleAlias.isEmpty()) {
             throw new BusinessException("角色别名为空", ErrorCode.PARAMETER_ERROR);
         }
+        log.info("用户角色别名-{}", roleAlias);
         if (!"管理员".equals(roleAlias)) {
-            throw new BusinessException("权限不足", ErrorCode.PARAMETER_ERROR);
+            throw new BusinessException("权限不足1", ErrorCode.PARAMETER_ERROR);
         }
         //进行数据库查询
         UserDO userDO = userService.getUserByUuid(userUuid);
@@ -58,7 +59,7 @@ public class RecommendSetupsLogic implements RecommendSetupsService {
             throw new BusinessException("角色不存在", ErrorCode.HEADER_ERROR);
         }
         if (!"管理员".equals(role.getRoleAlias())) {
-            throw new BusinessException("权限不足", ErrorCode.BODY_ERROR);
+            throw new BusinessException("权限不足2", ErrorCode.PARAMETER_ERROR);
         }
     }
 
