@@ -4,7 +4,9 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsCarDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsGameDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsMatchDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetMatchListDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsCarDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsGameDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsMatchDO;
@@ -17,6 +19,10 @@ import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 比赛逻辑
@@ -105,6 +111,7 @@ public class MatchLogic implements MatchService {
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(
                 getData.getGameName(), getData.getTrackName(), getData.getCarName());
         SettingsMatchDO settingsMatchDO = new SettingsMatchDO();
+        log.info("比赛时间为:{}", getData.getMatchTime());
         settingsMatchDO.setMatchUuid(UUIDUtils.generateUuid())
                 .setGameUuid(gameTrackCarUuidDTO.getGameUuid())
                 .setTrackUuid(gameTrackCarUuidDTO.getTrackUuid())
@@ -112,8 +119,74 @@ public class MatchLogic implements MatchService {
                 .setMatchName(getData.getMatchName())
                 .setMatchTime(getData.getMatchTime())
                 .setMatchDetails(getData.getMatchDetails());
-        log.info("比赛数据为-{}", settingsMatchDO);
+        log.info("DO比赛时间为：{}", settingsMatchDO.getMatchTime());
         log.info("数据库存储管理员添加比赛");
         settingsMatchDAO.save(settingsMatchDO);
+    }
+
+    @Override
+    public CustomPage<GetMatchListDTO> getMatchList(Integer page, String gameName,
+                                                    LocalDate startTime, LocalDate endTime) {
+        // 设置每页大小
+        final int pageSize = 10;
+
+        SettingsGameDO settingsGameDO = settingsGameDAO.lambdaQuery()
+                .eq(SettingsGameDO::getGameName, gameName).one();
+        if (settingsGameDO == null) {
+            throw new BusinessException("游戏不存在", ErrorCode.PARAMETER_ERROR);
+        }
+        log.info("获取推荐设置");
+        // 1. 计算总数（不加分页限制）
+        long total = settingsMatchDAO.lambdaQuery()
+                .eq(SettingsMatchDO::getGameUuid, settingsGameDO.getGameUuid())
+                .between(SettingsMatchDO::getMatchTime, startTime, endTime)
+                .count();
+        if (total == 0) {
+            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+        }
+        // 2. 查询当前页数据
+        int offset = (page - 1) * pageSize;
+        List<SettingsMatchDO> settingsRecords = settingsMatchDAO.lambdaQuery()
+                .eq(SettingsMatchDO::getGameUuid, settingsGameDO.getGameUuid())
+                .between(SettingsMatchDO::getMatchTime, startTime, endTime)
+                .last("LIMIT " + pageSize + " OFFSET " + offset)
+                .list();
+        if (settingsRecords.isEmpty()) {
+            throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
+        }
+        // 3. 映射查询结果到目标DTO对象
+        List<GetMatchListDTO> getMatchDtoList = settingsRecords.stream()
+                .map(SettingsMatchDO -> new GetMatchListDTO()
+                        .setMatchUuid(SettingsMatchDO.getMatchUuid())
+                        .setGameName(settingsGameDO.getGameName())
+                        .setTrackName(settingsTrackDAO.lambdaQuery()
+                                .eq(SettingsTrackDO::getTrackUuid, SettingsMatchDO.getTrackUuid())
+                                .one().getTrackName())
+                        .setCarName(settingsCarDAO.lambdaQuery()
+                                .eq(SettingsCarDO::getCarUuid, SettingsMatchDO.getCarUuid())
+                                .one().getCarName())
+                        .setMatchName(SettingsMatchDO.getMatchName())
+                        .setMatchTime(String.valueOf(SettingsMatchDO.getMatchTime()))
+                        .setMatchDetails(SettingsMatchDO.getMatchDetails()))
+                .collect(Collectors.toList());
+
+        // 4. 封装为自定义分页对象
+        CustomPage<GetMatchListDTO> resultPage = new CustomPage<>();
+        resultPage.setRecords(getMatchDtoList);
+        resultPage.setTotal(total);
+        resultPage.setSize((long) pageSize);
+
+        return resultPage;
+    }
+
+    @Override
+    public void adminDeleteMatch(String matchUuid) {
+        SettingsMatchDO settingsMatchDO = settingsMatchDAO.lambdaQuery()
+                .eq(SettingsMatchDO::getMatchUuid, matchUuid).one();
+        if (settingsMatchDO == null) {
+            throw new BusinessException("比赛不存在", ErrorCode.PARAMETER_ERROR);
+        }
+        log.info("数据库操作删除比赛");
+        settingsMatchDAO.removeById(matchUuid);
     }
 }

@@ -1,5 +1,6 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -17,6 +18,7 @@ public class AddMatchVO {
     String trackName;
     String carName;
     String matchName;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     LocalDateTime matchTime;
     String matchDetails;
 }
