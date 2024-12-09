@@ -7,9 +7,11 @@ import com.flashlack.homeofesportsracingsimulatorsettings.dao.SettingsTrackDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GameTrackCarUuidDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsCarDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsGameDO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsMatchDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsTrackDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddMatchVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.MatchService;
+import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.ErrorCode;
 import com.xlf.utility.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -89,7 +91,7 @@ public class MatchLogic implements MatchService {
         if (getData.getMatchName() == null || getData.getMatchName().isEmpty()) {
             throw new BusinessException("比赛名称为空", ErrorCode.PARAMETER_ERROR);
         }
-        if (getData.getMatchTime() == null || getData.getMatchTime().isEmpty()) {
+        if (getData.getMatchTime() == null) {
             throw new BusinessException("比赛时间为空", ErrorCode.PARAMETER_ERROR);
         }
         if (getData.getMatchDetails() == null || getData.getMatchDetails().isEmpty()) {
@@ -100,5 +102,18 @@ public class MatchLogic implements MatchService {
     @Override
     public void adminAddMatch(AddMatchVO getData) {
         log.info("管理员添加比赛");
+        GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(
+                getData.getGameName(), getData.getTrackName(), getData.getCarName());
+        SettingsMatchDO settingsMatchDO = new SettingsMatchDO();
+        settingsMatchDO.setMatchUuid(UUIDUtils.generateUuid())
+                .setGameUuid(gameTrackCarUuidDTO.getGameUuid())
+                .setTrackUuid(gameTrackCarUuidDTO.getTrackUuid())
+                .setCarUuid(gameTrackCarUuidDTO.getCarUuid())
+                .setMatchName(getData.getMatchName())
+                .setMatchTime(getData.getMatchTime())
+                .setMatchDetails(getData.getMatchDetails());
+        log.info("比赛数据为-{}", settingsMatchDO);
+        log.info("数据库存储管理员添加比赛");
+        settingsMatchDAO.save(settingsMatchDO);
     }
 }

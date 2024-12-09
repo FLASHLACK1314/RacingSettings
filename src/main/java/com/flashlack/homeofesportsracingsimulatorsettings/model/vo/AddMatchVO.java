@@ -3,8 +3,11 @@ package com.flashlack.homeofesportsracingsimulatorsettings.model.vo;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 /**
  * 添加比赛VO
+ *
  * @author FLASHLACK
  */
 @Data
@@ -14,6 +17,6 @@ public class AddMatchVO {
     String trackName;
     String carName;
     String matchName;
-    String matchTime;
+    LocalDateTime matchTime;
     String matchDetails;
 }

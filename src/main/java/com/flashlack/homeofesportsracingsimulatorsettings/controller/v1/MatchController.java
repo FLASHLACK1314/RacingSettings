@@ -45,6 +45,13 @@ public class MatchController {
         return userUuid;
     }
 
+    /**
+     * 管理员添加比赛
+     * @param request 请求
+     * @param roleAlias 角色别名
+     * @param getData 添加比赛数据
+     * @return 是否添加成功
+     */
     @PostMapping(value = "/adminAddMatch", name = "管理员添加比赛")
     public ResponseEntity<BaseResponse<String>> adminAddMatch(
             HttpServletRequest request,
