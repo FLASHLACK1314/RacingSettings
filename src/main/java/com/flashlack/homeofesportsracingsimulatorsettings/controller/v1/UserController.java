@@ -135,4 +135,5 @@ public class UserController {
         redisService.deleteTokenFromRedis(userUuid);
         return ResultUtil.success("登出成功");
     }
+
 }

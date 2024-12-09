@@ -17,6 +17,7 @@ create table settings_match
             references settings_car
             on update restrict on delete restrict,
     match_name    varchar(32) not null,
+    match_time    timestamp   not null,
     match_details varchar(64) not null
 );
 
@@ -32,7 +33,10 @@ comment on column settings_match.car_uuid is '赛车UUID';
 
 comment on column settings_match.match_name is '比赛简述';
 
+comment on column settings_match.match_time is '比赛时间';
+
 comment on column settings_match.match_details is '比赛详情';
+
 
 alter table settings_match
     owner to "racingSettings";
