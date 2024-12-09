@@ -12,6 +12,7 @@ import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsG
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsMatchDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.entity.SettingsTrackDO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddMatchVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateMatchVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.MatchService;
 import com.flashlack.homeofesportsracingsimulatorsettings.util.UUIDUtils;
 import com.xlf.utility.ErrorCode;
@@ -20,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,7 +109,7 @@ public class MatchLogic implements MatchService {
     }
 
     @Override
-    public void adminAddMatch(AddMatchVO getData) {
+    public void adminAddMatch(AddMatchVO getData) throws ParseException {
         log.info("管理员添加比赛");
         GameTrackCarUuidDTO gameTrackCarUuidDTO = getGameTrackCarUuidByName(
                 getData.getGameName(), getData.getTrackName(), getData.getCarName());
@@ -117,7 +120,8 @@ public class MatchLogic implements MatchService {
                 .setTrackUuid(gameTrackCarUuidDTO.getTrackUuid())
                 .setCarUuid(gameTrackCarUuidDTO.getCarUuid())
                 .setMatchName(getData.getMatchName())
-                .setMatchTime(getData.getMatchTime())
+                .setMatchTime(new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(getData.getMatchTime()).getTime()))
                 .setMatchDetails(getData.getMatchDetails());
         log.info("DO比赛时间为：{}", settingsMatchDO.getMatchTime());
         log.info("数据库存储管理员添加比赛");
@@ -126,7 +130,7 @@ public class MatchLogic implements MatchService {
 
     @Override
     public CustomPage<GetMatchListDTO> getMatchList(Integer page, String gameName,
-                                                    LocalDate startTime, LocalDate endTime) {
+                                                    String startTime, String endTime) throws ParseException {
         // 设置每页大小
         final int pageSize = 10;
 
@@ -136,11 +140,15 @@ public class MatchLogic implements MatchService {
             throw new BusinessException("游戏不存在", ErrorCode.PARAMETER_ERROR);
         }
         log.info("获取推荐设置");
+        log.info("结束时间:{}", endTime);
         // 1. 计算总数（不加分页限制）
         long total = settingsMatchDAO.lambdaQuery()
                 .eq(SettingsMatchDO::getGameUuid, settingsGameDO.getGameUuid())
-                .between(SettingsMatchDO::getMatchTime, startTime, endTime)
+                .between(SettingsMatchDO::getMatchTime, new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(startTime).getTime()), new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(endTime).getTime()))
                 .count();
+        log.info("总数为：{}", total);
         if (total == 0) {
             throw new BusinessException("数据为空", ErrorCode.OPERATION_INVALID);
         }
@@ -148,7 +156,9 @@ public class MatchLogic implements MatchService {
         int offset = (page - 1) * pageSize;
         List<SettingsMatchDO> settingsRecords = settingsMatchDAO.lambdaQuery()
                 .eq(SettingsMatchDO::getGameUuid, settingsGameDO.getGameUuid())
-                .between(SettingsMatchDO::getMatchTime, startTime, endTime)
+                .between(SettingsMatchDO::getMatchTime, new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(startTime).getTime()), new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(endTime).getTime()))
                 .last("LIMIT " + pageSize + " OFFSET " + offset)
                 .list();
         if (settingsRecords.isEmpty()) {
@@ -189,4 +199,40 @@ public class MatchLogic implements MatchService {
         log.info("数据库操作删除比赛");
         settingsMatchDAO.removeById(matchUuid);
     }
+
+    @Override
+    public void adminUpdateMatch(UpdateMatchVO getData) throws ParseException {
+        log.info("管理员更新比赛");
+        SettingsMatchDO settingsMatchDO = settingsMatchDAO.lambdaQuery()
+                .eq(SettingsMatchDO::getMatchUuid, getData.getMatchUuid()).one();
+        if (settingsMatchDO == null) {
+            throw new BusinessException("比赛不存在", ErrorCode.PARAMETER_ERROR);
+        }
+        settingsMatchDO.setMatchTime(new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm")
+                        .parse(getData.getMatchTime()).getTime()))
+                .setMatchName(getData.getMatchName())
+                .setMatchDetails(getData.getMatchDetails());
+        log.info("数据库操作更新比赛");
+        settingsMatchDAO.updateById(settingsMatchDO);
+    }
+
+    @Override
+    public void checkUpdateMatchVO(UpdateMatchVO getData) {
+        if (getData == null) {
+            throw new BusinessException("更新比赛数据为空", ErrorCode.PARAMETER_ERROR);
+        }
+        if (getData.getMatchUuid() == null || getData.getMatchUuid().isEmpty()) {
+            throw new BusinessException("比赛UUID为空", ErrorCode.PARAMETER_ERROR);
+        }
+        if (getData.getMatchName() == null || getData.getMatchName().isEmpty()) {
+            throw new BusinessException("比赛名称为空", ErrorCode.PARAMETER_ERROR);
+        }
+        if (getData.getMatchTime() == null) {
+            throw new BusinessException("比赛时间为空", ErrorCode.PARAMETER_ERROR);
+        }
+        if (getData.getMatchDetails() == null || getData.getMatchDetails().isEmpty()) {
+            throw new BusinessException("比赛详情为空", ErrorCode.PARAMETER_ERROR);
+        }
+    }
+
 }

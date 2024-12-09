@@ -3,6 +3,7 @@ package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetMatchListDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddMatchVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateMatchVO;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.MatchService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RecommendSetupsService;
 import com.flashlack.homeofesportsracingsimulatorsettings.service.RedisService;
@@ -19,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.text.ParseException;
 
 /**
  * 比赛控制器
@@ -75,7 +76,7 @@ public class MatchController {
             HttpServletRequest request,
             @RequestParam String roleAlias,
             @RequestBody AddMatchVO getData
-    ) {
+    ) throws ParseException {
         String userUuid = getUserUuid(request);
         recommendSetupsService.checkRole(userUuid, roleAlias);
         matchService.checkAddMatchData(getData);
@@ -99,9 +100,9 @@ public class MatchController {
             HttpServletRequest request,
             @RequestParam(value = "page", defaultValue = "1") Integer page,
             @RequestParam String gameName,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startTime,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime
-    ) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String startTime,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") String endTime
+    ) throws ParseException {
         checkUserUuid(request);
         log.info("获取比赛列表");
         CustomPage<GetMatchListDTO> matchList = matchService.getMatchList(page, gameName, startTime, endTime);
@@ -109,8 +110,9 @@ public class MatchController {
     }
 
     /**
-     * 用户删除比赛
-     * @param request 请求
+     * 管理员删除比赛
+     *
+     * @param request   请求
      * @param roleAlias 角色别名
      * @param matchUuid 比赛uuid
      * @return 是否删除成功
@@ -126,5 +128,27 @@ public class MatchController {
         log.info("管理员删除比赛");
         matchService.adminDeleteMatch(matchUuid);
         return ResultUtil.success("删除比赛成功", "删除比赛成功");
+    }
+
+    /**
+     * 管理员更新比赛
+     *
+     * @param request   请求
+     * @param roleAlias 角色别名
+     * @param getData   更新比赛数据
+     * @return 是否更新成功
+     */
+    @PostMapping(value = "/adminUpdateMatch", name = "管理员更新比赛")
+    public ResponseEntity<BaseResponse<String>> adminUpdateMatch(
+            HttpServletRequest request,
+            @RequestParam String roleAlias,
+            @RequestBody UpdateMatchVO getData
+    ) throws ParseException {
+        String userUuid = getUserUuid(request);
+        recommendSetupsService.checkRole(userUuid, roleAlias);
+        matchService.checkUpdateMatchVO(getData);
+        log.info("管理员更新比赛数据：{}", getData);
+        matchService.adminUpdateMatch(getData);
+        return ResultUtil.success("更新比赛成功", "更新比赛成功");
     }
 }

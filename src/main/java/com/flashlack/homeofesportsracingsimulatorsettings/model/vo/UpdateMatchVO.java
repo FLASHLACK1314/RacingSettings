@@ -5,16 +5,14 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
- * 添加比赛VO
+ * 更新比赛VO
  *
  * @author FLASHLACK
  */
 @Data
 @Accessors(chain = true)
-public class AddMatchVO {
-    String gameName;
-    String trackName;
-    String carName;
+public class UpdateMatchVO {
+    String matchUuid;
     String matchName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     String matchTime;

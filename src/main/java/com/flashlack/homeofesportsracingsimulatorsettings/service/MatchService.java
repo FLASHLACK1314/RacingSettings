@@ -3,8 +3,9 @@ package com.flashlack.homeofesportsracingsimulatorsettings.service;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.CustomPage;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.DTO.GetMatchListDTO;
 import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.AddMatchVO;
+import com.flashlack.homeofesportsracingsimulatorsettings.model.vo.UpdateMatchVO;
 
-import java.time.LocalDate;
+import java.text.ParseException;
 
 /**
  * 比赛设置服务接口
@@ -26,7 +27,7 @@ public interface MatchService {
      * @param getData 添加比赛数据
      */
     void adminAddMatch(
-            AddMatchVO getData);
+            AddMatchVO getData) throws ParseException;
 
     /**
      * 获取比赛列表
@@ -40,9 +41,9 @@ public interface MatchService {
     CustomPage<GetMatchListDTO> getMatchList(
             Integer page,
             String gameName,
-            LocalDate startTime,
-            LocalDate endTime
-    );
+            String startTime,
+            String endTime
+    ) throws ParseException;
 
     /**
      * 管理员删除比赛
@@ -51,4 +52,20 @@ public interface MatchService {
      */
     void adminDeleteMatch(
             String matchUuid);
+
+    /**
+     * 管理员更新比赛
+     *
+     * @param getData 更新比赛数据
+     */
+    void adminUpdateMatch(
+            UpdateMatchVO getData) throws ParseException;
+
+    /**
+     * 检查更新比赛数据
+     *
+     * @param getData 更新比赛数据
+     */
+    void checkUpdateMatchVO(
+            UpdateMatchVO getData);
 }
