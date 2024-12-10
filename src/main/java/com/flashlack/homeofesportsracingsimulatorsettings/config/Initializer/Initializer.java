@@ -62,9 +62,10 @@ public class Initializer {
         insertGame(UUIDInitializationConstants.GAME_F124_UUID, "F124");
 
         // 插入车辆
-        insertCar(UUIDInitializationConstants.CAR_ACC_FERRARI296_UUID, "FERRARI296");
-        insertCar(UUIDInitializationConstants.CAR_ACC_HGT3E2_UUID, "HGT3E2");
-        insertCar(UUIDInitializationConstants.CAR_ACC_PORSCHE992R_UUID, "PORSCHE992R");
+        insertCar(UUIDInitializationConstants.CAR_ACC_FERRARI296_UUID, "法拉利296");
+        insertCar(UUIDInitializationConstants.CAR_ACC_HGT3E2_UUID, "兰博基尼GT3EVO2");
+        insertCar(UUIDInitializationConstants.CAR_ACC_PORSCHE992R_UUID, "保时捷992R");
+        insertCar(UUIDInitializationConstants.CAR_ACC_GTSTANDARDCAR_UUID, "GT统规车");
         insertCar(UUIDInitializationConstants.CAR_F124_F1_UUID, "F1");
 
         // 插入赛道
