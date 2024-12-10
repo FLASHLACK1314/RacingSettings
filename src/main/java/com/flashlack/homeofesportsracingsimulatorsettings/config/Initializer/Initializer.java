@@ -68,8 +68,53 @@ public class Initializer {
         insertCar(UUIDInitializationConstants.CAR_F124_F1_UUID, "F1");
 
         // 插入赛道
-        insertTrack(UUIDInitializationConstants.TRACK_SPA_UUID, "SPA");
-        insertTrack(UUIDInitializationConstants.TRACK_MONZA_UUID, "MONZA");
+        insertTrack(UUIDInitializationConstants.TRACK_SPA_UUID, "斯帕");
+        insertTrack(UUIDInitializationConstants.TRACK_MONZA_UUID, "蒙扎");
+        insertTrack(UUIDInitializationConstants.TRACK_PAUL_RICARD_UUID, "保罗里卡德");
+        insertTrack(UUIDInitializationConstants.TRACK_BRANDS_HATCH_UUID, "布兰茨哈奇");
+        insertTrack(UUIDInitializationConstants.TRACK_MISANO_UUID, "米萨诺");
+        insertTrack(UUIDInitializationConstants.TRACK_NURBURGRING_NORDSCHLEIFE_UUID, "纽伯格林北环");
+        insertTrack(UUIDInitializationConstants.TRACK_ZANDVOORT_UUID, "赞德沃特");
+        insertTrack(UUIDInitializationConstants.TRACK_HUNGARORING_UUID, "匈格罗宁");
+        insertTrack(UUIDInitializationConstants.TRACK_SILVERSTONE_UUID, "银石");
+        insertTrack(UUIDInitializationConstants.TRACK_VALENCIA_UUID, "瓦伦西亚");
+        insertTrack(UUIDInitializationConstants.TRACK_IMOLA_UUID, "伊莫拉");
+        insertTrack(UUIDInitializationConstants.TRACK_RED_BULL_RING_UUID, "红牛环");
+        insertTrack(UUIDInitializationConstants.TRACK_OLTON_PARK_UUID, "奥顿公园");
+        insertTrack(UUIDInitializationConstants.TRACK_SNETTERTON_UUID, "斯内特顿");
+        insertTrack(UUIDInitializationConstants.TRACK_DONINGTON_PARK_UUID, "多宁顿公园");
+        insertTrack(UUIDInitializationConstants.TRACK_AUSTIN_UUID, "奥斯汀");
+        insertTrack(UUIDInitializationConstants.TRACK_SPIDER_WAY_UUID, "斯皮德韦");
+        insertTrack(UUIDInitializationConstants.TRACK_WATKINS_GLEN_UUID, "沃特金斯峡谷");
+        insertTrack(UUIDInitializationConstants.TRACK_LAGUNA_SECA_UUID, "全景山");
+        insertTrack(UUIDInitializationConstants.TRACK_SUZUKA_UUID, "铃鹿");
+        insertTrack(UUIDInitializationConstants.TRACK_KARAMI_UUID, "卡拉米");
+        // 插入赛道
+        insertTrack(UUIDInitializationConstants.TRACK_BAHRAIN_UUID, "巴林");
+        insertTrack(UUIDInitializationConstants.TRACK_JEDDAH_UUID, "吉达");
+        insertTrack(UUIDInitializationConstants.TRACK_AUSTRALIA_UUID, "澳大利亚");
+        insertTrack(UUIDInitializationConstants.TRACK_JAPAN_UUID, "日本");
+        insertTrack(UUIDInitializationConstants.TRACK_CHINA_UUID, "中国");
+        insertTrack(UUIDInitializationConstants.TRACK_MIAMI_UUID, "迈阿密");
+        insertTrack(UUIDInitializationConstants.TRACK_MONACO_UUID, "摩纳哥");
+        insertTrack(UUIDInitializationConstants.TRACK_CANADA_UUID, "加拿大");
+        insertTrack(UUIDInitializationConstants.TRACK_SPAIN_UUID, "西班牙");
+        insertTrack(UUIDInitializationConstants.TRACK_AUSTRIA_UUID, "奥地利");
+        insertTrack(UUIDInitializationConstants.TRACK_BRITAIN_UUID, "英国");
+        insertTrack(UUIDInitializationConstants.TRACK_HUNGARY_UUID, "匈牙利");
+        insertTrack(UUIDInitializationConstants.TRACK_BELGIUM_UUID, "比利时");
+        insertTrack(UUIDInitializationConstants.TRACK_NETHERLANDS_UUID, "荷兰");
+        insertTrack(UUIDInitializationConstants.TRACK_ITALY_UUID, "意大利");
+        insertTrack(UUIDInitializationConstants.TRACK_AZERBAIJAN_UUID, "阿塞拜疆");
+        insertTrack(UUIDInitializationConstants.TRACK_SINGAPORE_UUID, "新加坡");
+        insertTrack(UUIDInitializationConstants.TRACK_COTA_UUID, "美国COTA");
+        insertTrack(UUIDInitializationConstants.TRACK_MEXICO_UUID, "墨西哥");
+        insertTrack(UUIDInitializationConstants.TRACK_BRAZIL_UUID, "巴西");
+        insertTrack(UUIDInitializationConstants.TRACK_LAS_VEGAS_UUID, "拉斯维加斯");
+        insertTrack(UUIDInitializationConstants.TRACK_QATAR_UUID, "卡塔尔");
+        insertTrack(UUIDInitializationConstants.TRACK_ABU_DHABI_UUID, "阿布扎比");
+        insertTrack(UUIDInitializationConstants.TRACK_PORTUGAL_UUID, "葡萄牙");
+
 
         // 插入系统常量
         insertSystemConstants("ADMIN_ROLE_UUID", UUIDInitializationConstants.ADMIN_ROLE_UUID);
@@ -82,6 +127,51 @@ public class Initializer {
         insertSystemConstants("CAR_F124_F1_UUID", UUIDInitializationConstants.CAR_F124_F1_UUID);
         insertSystemConstants("TRACK_SPA_UUID", UUIDInitializationConstants.TRACK_SPA_UUID);
         insertSystemConstants("TRACK_MONZA_UUID", UUIDInitializationConstants.TRACK_MONZA_UUID);
+        insertSystemConstants("TRACK_PAUL_RICARD_UUID", UUIDInitializationConstants.TRACK_PAUL_RICARD_UUID);
+        insertSystemConstants("TRACK_BRANDS_HATCH_UUID", UUIDInitializationConstants.TRACK_BRANDS_HATCH_UUID);
+        insertSystemConstants("TRACK_MISANO_UUID", UUIDInitializationConstants.TRACK_MISANO_UUID);
+        insertSystemConstants("TRACK_NURBURGRING_NORDSCHLEIFE_UUID", UUIDInitializationConstants.TRACK_NURBURGRING_NORDSCHLEIFE_UUID);
+        insertSystemConstants("TRACK_ZANDVOORT_UUID", UUIDInitializationConstants.TRACK_ZANDVOORT_UUID);
+        insertSystemConstants("TRACK_HUNGARORING_UUID", UUIDInitializationConstants.TRACK_HUNGARORING_UUID);
+        insertSystemConstants("TRACK_SILVERSTONE_UUID", UUIDInitializationConstants.TRACK_SILVERSTONE_UUID);
+        insertSystemConstants("TRACK_VALENCIA_UUID", UUIDInitializationConstants.TRACK_VALENCIA_UUID);
+        insertSystemConstants("TRACK_IMOLA_UUID", UUIDInitializationConstants.TRACK_IMOLA_UUID);
+        insertSystemConstants("TRACK_RED_BULL_RING_UUID", UUIDInitializationConstants.TRACK_RED_BULL_RING_UUID);
+        insertSystemConstants("TRACK_OLTON_PARK_UUID", UUIDInitializationConstants.TRACK_OLTON_PARK_UUID);
+        insertSystemConstants("TRACK_SNETTERTON_UUID", UUIDInitializationConstants.TRACK_SNETTERTON_UUID);
+        insertSystemConstants("TRACK_DONINGTON_PARK_UUID", UUIDInitializationConstants.TRACK_DONINGTON_PARK_UUID);
+        insertSystemConstants("TRACK_AUSTIN_UUID", UUIDInitializationConstants.TRACK_AUSTIN_UUID);
+        insertSystemConstants("TRACK_SPIDER_WAY_UUID", UUIDInitializationConstants.TRACK_SPIDER_WAY_UUID);
+        insertSystemConstants("TRACK_WATKINS_GLEN_UUID", UUIDInitializationConstants.TRACK_WATKINS_GLEN_UUID);
+        insertSystemConstants("TRACK_LAGUNA_SECA_UUID", UUIDInitializationConstants.TRACK_LAGUNA_SECA_UUID);
+        insertSystemConstants("TRACK_SUZUKA_UUID", UUIDInitializationConstants.TRACK_SUZUKA_UUID);
+        insertSystemConstants("TRACK_KARAMI_UUID", UUIDInitializationConstants.TRACK_KARAMI_UUID);
+        insertSystemConstants("TRACK_BAHRAIN_UUID", UUIDInitializationConstants.TRACK_BAHRAIN_UUID);
+        insertSystemConstants("TRACK_JEDDAH_UUID", UUIDInitializationConstants.TRACK_JEDDAH_UUID);
+        insertSystemConstants("TRACK_AUSTRALIA_UUID", UUIDInitializationConstants.TRACK_AUSTRALIA_UUID);
+        insertSystemConstants("TRACK_JAPAN_UUID", UUIDInitializationConstants.TRACK_JAPAN_UUID);
+        insertSystemConstants("TRACK_CHINA_UUID", UUIDInitializationConstants.TRACK_CHINA_UUID);
+        insertSystemConstants("TRACK_MIAMI_UUID", UUIDInitializationConstants.TRACK_MIAMI_UUID);
+        insertSystemConstants("TRACK_MONACO_UUID", UUIDInitializationConstants.TRACK_MONACO_UUID);
+        insertSystemConstants("TRACK_CANADA_UUID", UUIDInitializationConstants.TRACK_CANADA_UUID);
+        insertSystemConstants("TRACK_SPAIN_UUID", UUIDInitializationConstants.TRACK_SPAIN_UUID);
+        insertSystemConstants("TRACK_AUSTRIA_UUID", UUIDInitializationConstants.TRACK_AUSTRIA_UUID);
+        insertSystemConstants("TRACK_BRITAIN_UUID", UUIDInitializationConstants.TRACK_BRITAIN_UUID);
+        insertSystemConstants("TRACK_HUNGARY_UUID", UUIDInitializationConstants.TRACK_HUNGARY_UUID);
+        insertSystemConstants("TRACK_BELGIUM_UUID", UUIDInitializationConstants.TRACK_BELGIUM_UUID);
+        insertSystemConstants("TRACK_NETHERLANDS_UUID", UUIDInitializationConstants.TRACK_NETHERLANDS_UUID);
+        insertSystemConstants("TRACK_ITALY_UUID", UUIDInitializationConstants.TRACK_ITALY_UUID);
+        insertSystemConstants("TRACK_AZERBAIJAN_UUID", UUIDInitializationConstants.TRACK_AZERBAIJAN_UUID);
+        insertSystemConstants("TRACK_SINGAPORE_UUID", UUIDInitializationConstants.TRACK_SINGAPORE_UUID);
+        insertSystemConstants("TRACK_COTA_UUID", UUIDInitializationConstants.TRACK_COTA_UUID);
+        insertSystemConstants("TRACK_MEXICO_UUID", UUIDInitializationConstants.TRACK_MEXICO_UUID);
+        insertSystemConstants("TRACK_BRAZIL_UUID", UUIDInitializationConstants.TRACK_BRAZIL_UUID);
+        insertSystemConstants("TRACK_LAS_VEGAS_UUID", UUIDInitializationConstants.TRACK_LAS_VEGAS_UUID);
+        insertSystemConstants("TRACK_QATAR_UUID", UUIDInitializationConstants.TRACK_QATAR_UUID);
+        insertSystemConstants("TRACK_ABU_DHABI_UUID", UUIDInitializationConstants.TRACK_ABU_DHABI_UUID);
+        insertSystemConstants("TRACK_PORTUGAL_UUID", UUIDInitializationConstants.TRACK_PORTUGAL_UUID);
+
+
 
     }
 
