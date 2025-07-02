@@ -39,7 +39,6 @@ public class AuthController {
     public ResponseEntity<BaseResponse<String>> userRegister(
             @RequestBody @Valid RegisterVO getData
     ) {
-        log.info("用户注册数据：{}", getData);
         //检查数据
         authService.checkRegisterData(getData);
         //进行注册
