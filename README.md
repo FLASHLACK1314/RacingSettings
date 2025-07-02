@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 5e04d87d3e5c191d7e4212cf1c84dde7a8cb5c18
 # Home of eSports Racing Simulator Settings
 
 一个专为赛车模拟器电竞设置管理而设计的后端服务系统。
@@ -139,11 +134,6 @@ mvn spring-boot:run
 欢迎提交Issue和Pull Request来帮助改进项目。
 
 ## 许可证
-<<<<<<< HEAD
-MIT License 
-=======
 MIT License
-```
 
 这份文档涵盖了项目的主要功能模块、技术栈、项目结构和使用说明，适合作为GitHub项目的README文档。
->>>>>>> 5e04d87d3e5c191d7e4212cf1c84dde7a8cb5c18
