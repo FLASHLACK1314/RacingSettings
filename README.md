@@ -110,7 +110,7 @@ cd RacingSettings
 
 3. 修改配置文件
 ```yaml
-# 编辑src/main/resources/application-dev.yaml
+# 编辑src/main/resources/application-example.yaml
 # 配置数据库连接、Redis连接等信息
 ```
 
