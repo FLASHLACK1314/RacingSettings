@@ -35,3 +35,4 @@ build/
 # Ignore Spring Boot configuration files
 src/main/resources/application.yaml
 
+/CLAUDE.md
