@@ -52,10 +52,13 @@ public class Initializer {
         log.info("已占用的管理员角色 UUID: {}", UUIDInitializationConstants.ADMIN_ROLE_UUID);
         UUIDUtils.addOccupiedUuid(UUIDInitializationConstants.USER_ROLE_UUID);
         log.info("已占用的普通用户角色 UUID: {}", UUIDInitializationConstants.USER_ROLE_UUID);
+        UUIDUtils.addOccupiedUuid(UUIDInitializationConstants.ORGANIZER_ROLE_UUID);
+        log.info("已占用的比赛主办方角色 UUID: {}", UUIDInitializationConstants.ORGANIZER_ROLE_UUID);
 
         // 插入角色
         insertRole(UUIDInitializationConstants.ADMIN_ROLE_UUID, "管理员", "ALL_PERMISSIONS");
         insertRole(UUIDInitializationConstants.USER_ROLE_UUID, "普通用户", "VIEW, EDIT");
+        insertRole(UUIDInitializationConstants.ORGANIZER_ROLE_UUID, "比赛主办方", "MANAGE_MATCH");
 
         // 插入游戏
         insertGame(UUIDInitializationConstants.GAME_ACC_UUID, "神力科莎:争锋");
@@ -120,6 +123,7 @@ public class Initializer {
         // 插入系统常量
         insertSystemConstants("ADMIN_ROLE_UUID", UUIDInitializationConstants.ADMIN_ROLE_UUID);
         insertSystemConstants("USER_ROLE_UUID", UUIDInitializationConstants.USER_ROLE_UUID);
+        insertSystemConstants("ORGANIZER_ROLE_UUID", UUIDInitializationConstants.ORGANIZER_ROLE_UUID);
         insertSystemConstants("GAME_ACC_UUID", UUIDInitializationConstants.GAME_ACC_UUID);
         insertSystemConstants("GAME_F124_UUID", UUIDInitializationConstants.GAME_F124_UUID);
         insertSystemConstants("CAR_ACC_FERRARI296_UUID", UUIDInitializationConstants.CAR_ACC_FERRARI296_UUID);
@@ -171,9 +175,6 @@ public class Initializer {
         insertSystemConstants("TRACK_QATAR_UUID", UUIDInitializationConstants.TRACK_QATAR_UUID);
         insertSystemConstants("TRACK_ABU_DHABI_UUID", UUIDInitializationConstants.TRACK_ABU_DHABI_UUID);
         insertSystemConstants("TRACK_PORTUGAL_UUID", UUIDInitializationConstants.TRACK_PORTUGAL_UUID);
-
-
-
     }
 
     // 初始化管理员用户数据

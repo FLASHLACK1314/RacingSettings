@@ -31,6 +31,7 @@ public class UUIDConstants {
             // 从数据库加载每个 UUID 值
             CONSTANTS_MAP.put("ADMIN_ROLE_UUID", systemConstantsDAO.getById("ADMIN_ROLE_UUID").getValue());
             CONSTANTS_MAP.put("USER_ROLE_UUID", systemConstantsDAO.getById("USER_ROLE_UUID").getValue());
+            CONSTANTS_MAP.put("ORGANIZER_ROLE_UUID", systemConstantsDAO.getById("ORGANIZER_ROLE_UUID").getValue());
             CONSTANTS_MAP.put("GAME_ACC_UUID", systemConstantsDAO.getById("GAME_ACC_UUID").getValue());
             CONSTANTS_MAP.put("GAME_F124_UUID", systemConstantsDAO.getById("GAME_F124_UUID").getValue());
             CONSTANTS_MAP.put("CAR_ACC_FERRARI296_UUID", systemConstantsDAO.getById("CAR_ACC_FERRARI296_UUID").getValue());

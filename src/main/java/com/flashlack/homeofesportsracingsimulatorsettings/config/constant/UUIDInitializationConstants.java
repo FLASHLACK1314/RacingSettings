@@ -12,6 +12,7 @@ public class UUIDInitializationConstants {
     // 定义角色UUID常量（使用手动生成的UUID）
     public static final String ADMIN_ROLE_UUID = UUIDUtils.generateUuid();
     public static final String USER_ROLE_UUID = UUIDUtils.generateUuid();
+    public static final String ORGANIZER_ROLE_UUID = UUIDUtils.generateUuid();
     //游戏UUID常量
     public static final String GAME_ACC_UUID = UUIDUtils.generateUuid();
     public static final String GAME_F124_UUID = UUIDUtils.generateUuid();
