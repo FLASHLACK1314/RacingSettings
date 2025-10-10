@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 权限逻辑
@@ -32,6 +34,13 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class AuthLogic implements AuthService {
+
+    private static final Set<String> SUPPORTED_REGISTER_ROLES = Set.of("USER", "ORGANIZER");
+    private static final Map<String, String> REGISTER_ROLE_KEY_MAP = Map.of(
+            "USER", "USER_ROLE_UUID",
+            "ORGANIZER", "ORGANIZER_ROLE_UUID"
+    );
+
     private final EmailCodeDAO emailCodeDAO;
     private final UserDAO userDAO;
     private final RoleDAO roleDAO;
@@ -39,144 +48,145 @@ public class AuthLogic implements AuthService {
 
     @Override
     public String checkLoginData(LoginVO getData) {
-        //检查用户是否存在
         UserDO userDO = userDAO.lambdaQuery()
-                .eq(UserDO::getUserEmail, getData.getUserEmail()).one();
+                .eq(UserDO::getUserEmail, getData.getUserEmail())
+                .one();
         if (userDO == null) {
             throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
         }
         if (!PasswordUtil.verify(getData.getUserPassword(), userDO.getUserPassword())) {
             throw new BusinessException("邮箱或者密码输入错误", ErrorCode.OPERATION_ERROR);
-        } else {
-            log.info("登录成功");
-            return userDO.getUserUuid();
         }
+        log.info("登录成功: {}", userDO.getUserUuid());
+        return userDO.getUserUuid();
     }
 
     @Override
     public void checkRegisterData(RegisterVO getData) {
-        //检查确认密码和密码是否一致
         if (!getData.getUserPassword().equals(getData.getConfirmPassword())) {
-            throw new BusinessException("密码不一致", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("两次输入的密码不一致", ErrorCode.OPERATION_ERROR);
         }
-        //验证邮箱验证码，首先在邮箱表内查询出来，然后进行比对
+
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
-                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail()).one();
+                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail())
+                .one();
         if (emailCodeDO == null) {
-            throw new BusinessException("请先获取验证码", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("请先获取邮箱验证码", ErrorCode.OPERATION_ERROR);
         }
-        if (!(emailCodeDO.getUserUuid() == null || emailCodeDO.getUserUuid().isEmpty())) {
-            throw new BusinessException("此邮箱已经被注册", ErrorCode.OPERATION_ERROR);
+        if (emailCodeDO.getUserUuid() != null && !emailCodeDO.getUserUuid().isEmpty()) {
+            throw new BusinessException("该邮箱已注册", ErrorCode.OPERATION_ERROR);
         }
         if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())) {
-            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("邮箱验证码不正确", ErrorCode.OPERATION_ERROR);
         }
-        //进行时间校验
+
         LocalDateTime now = LocalDateTime.now();
-        EmailCodeDO emailNowCodeDO = new EmailCodeDO();
-        emailNowCodeDO.setCreateTime(now);
-        log.info("目前时间为：{}", emailNowCodeDO.getCreateTime());
-        if (!emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
-            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+        if (!now.isBefore(emailCodeDO.getExpireTime())) {
+            throw new BusinessException("邮箱验证码已过期", ErrorCode.OPERATION_ERROR);
         }
-        //检查昵称
+
         UserDO userDO = userDAO.lambdaQuery()
-                .eq(UserDO::getNickName, getData.getNickName()).one();
+                .eq(UserDO::getNickName, getData.getNickName())
+                .one();
         if (userDO != null) {
-            throw new BusinessException("昵称已经被注册", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("昵称已被使用", ErrorCode.OPERATION_ERROR);
         }
-        //可以进行注册
+
+        if (!SUPPORTED_REGISTER_ROLES.contains(getData.getRoleType())) {
+            throw new BusinessException("角色类型不正确", ErrorCode.OPERATION_ERROR);
+        }
     }
 
     @Override
     public void register(RegisterVO getData) {
-        //进行数据交换
+        String roleKey = REGISTER_ROLE_KEY_MAP.getOrDefault(getData.getRoleType(), "USER_ROLE_UUID");
+        String roleUuid = UUIDConstants.getConstant(roleKey);
+        if (roleUuid == null || roleUuid.isEmpty()) {
+            throw new BusinessException("角色配置异常", ErrorCode.OPERATION_ERROR);
+        }
+
         UserDO userDO = new UserDO();
         userDO.setUserUuid(UUIDUtils.generateUuid())
-                .setRoleUuid(UUIDConstants.getConstant("USER_ROLE_UUID"))
+                .setRoleUuid(roleUuid)
                 .setUserEmail(getData.getUserEmail())
                 .setUserPassword(PasswordUtil.encrypt(getData.getUserPassword()))
                 .setNickName(getData.getNickName());
-        //进行注册
-        log.info("正在进行注册数据库操作");
+
+        log.info("正在进行注册数据库操作: {}", userDO.getUserUuid());
         userDAO.save(userDO);
+
         EmailCodeDO emailCodeDO = new EmailCodeDO();
-        //填入邮箱表
         emailCodeDO.setUserEmail(getData.getUserEmail())
                 .setUserUuid(userDO.getUserUuid());
-        log.info("正在邮箱更新操作");
-        log.info("用户UUID为：{}", emailCodeDO.getUserUuid());
         emailCodeDAO.updateUserUuidByEmail(emailCodeDO);
     }
 
     @Override
     public void checkAndFindPasswordData(FindPasswordVO getData) {
-        //检查确认密码和密码是否一致
         if (!getData.getNewPassword().equals(getData.getConfirmPassword())) {
-            throw new BusinessException("密码不一致", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("两次输入的密码不一致", ErrorCode.OPERATION_ERROR);
         }
-        //验证邮箱验证码，首先在邮箱表内查询出来，然后进行比对
+
         EmailCodeDO emailCodeDO = emailCodeDAO.lambdaQuery()
-                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail()).one();
+                .eq(EmailCodeDO::getUserEmail, getData.getUserEmail())
+                .one();
         if (emailCodeDO == null) {
-            throw new BusinessException("此邮箱并未注册", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("该邮箱并未注册", ErrorCode.OPERATION_ERROR);
         }
         if (emailCodeDO.getUserUuid() == null || emailCodeDO.getUserUuid().isEmpty()) {
-            throw new BusinessException("此邮箱并未注册", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("该邮箱并未注册", ErrorCode.OPERATION_ERROR);
         }
-        log.info("用户数据库内邮箱验证码为:{}", emailCodeDO.getEmailCode());
         if (!emailCodeDO.getEmailCode().equals(getData.getEmailCode())) {
-            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("邮箱验证码不正确", ErrorCode.OPERATION_ERROR);
         }
-        //进行时间校验
+
         LocalDateTime now = LocalDateTime.now();
-        EmailCodeDO emailNowCodeDO = new EmailCodeDO();
-        emailNowCodeDO.setCreateTime(now);
-        log.info("校验找回密码的目前时间为：{}", emailNowCodeDO.getCreateTime());
-        if (!emailNowCodeDO.getCreateTime().isBefore(emailCodeDO.getExpireTime())) {
-            throw new BusinessException("邮箱验证码错误", ErrorCode.OPERATION_ERROR);
+        if (!now.isBefore(emailCodeDO.getExpireTime())) {
+            throw new BusinessException("邮箱验证码已过期", ErrorCode.OPERATION_ERROR);
         }
-        //可以进行修改密码
+
         UserDO userDO = userDAO.lambdaQuery()
-                .eq(UserDO::getUserUuid, emailCodeDO.getUserUuid()).one();
+                .eq(UserDO::getUserUuid, emailCodeDO.getUserUuid())
+                .one();
         if (userDO == null) {
             throw new BusinessException("系统错误", ErrorCode.NOT_EXIST);
         }
         if (PasswordUtil.verify(getData.getNewPassword(), userDO.getUserPassword())) {
-            throw new BusinessException("静止设置新密码和旧密码相同", ErrorCode.OPERATION_ERROR);
+            throw new BusinessException("新密码不能与旧密码相同", ErrorCode.OPERATION_ERROR);
         }
+
         userDO.setUserPassword(PasswordUtil.encrypt(getData.getNewPassword()));
         userDAO.updateUserPasswordByUuid(userDO);
-        //删除缓存中的Token
-        log.info("正在删除缓存中的Token");
+
         redisService.deleteTokenFromRedis(userDO.getUserUuid());
     }
-
 
     @Override
     public UserDO getUserByUuid(String userUuid) {
         return userDAO.lambdaQuery()
-                .eq(UserDO::getUserUuid, userUuid).one();
+                .eq(UserDO::getUserUuid, userUuid)
+                .one();
     }
 
     @Override
     public GetUserLoginDTO creatLoginBackInformation(String userUuid, String token) {
-        //查询用户的角色
         UserDO userDO = userDAO.lambdaQuery()
-                .eq(UserDO::getUserUuid, userUuid).one();
+                .eq(UserDO::getUserUuid, userUuid)
+                .one();
         if (userDO == null) {
             throw new BusinessException("用户不存在", ErrorCode.NOT_EXIST);
         }
-        //查询角色的权限
-        RoleDO roleDO = roleDAO.lambdaQuery().eq(RoleDO::getRoleUuid,
-                userDO.getRoleUuid()).one();
+
+        RoleDO roleDO = roleDAO.lambdaQuery()
+                .eq(RoleDO::getRoleUuid, userDO.getRoleUuid())
+                .one();
         if (roleDO == null) {
             throw new BusinessException("系统错误", ErrorCode.NOT_EXIST);
         }
+
         GetUserLoginDTO getUserLoginDTO = new GetUserLoginDTO();
         getUserLoginDTO.setRoleAlias(roleDO.getRoleAlias())
                 .setToken(token);
         return getUserLoginDTO;
     }
-
 }
