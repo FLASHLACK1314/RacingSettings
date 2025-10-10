@@ -49,6 +49,7 @@ public class DatabaseInitializer {
         tableSqlMap.put("settings_setups", "templates/settings_setups.sql");
         tableSqlMap.put("settings_teaching", "templates/settings_teaching.sql");
         tableSqlMap.put("settings_match", "templates/settings_match.sql");
+        tableSqlMap.put("settings_match_registration", "templates/settings_match_registration.sql");
         tableSqlMap.put("system_constants", "templates/system_constants.sql");
     }
 

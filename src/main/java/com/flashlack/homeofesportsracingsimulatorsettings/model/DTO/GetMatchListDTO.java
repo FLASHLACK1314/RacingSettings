@@ -17,4 +17,9 @@ public class GetMatchListDTO {
     String matchName;
     String matchTime;
     String matchDetails;
+    String organizerUuid;
+    String registrationStartTime;
+    String registrationEndTime;
+    String matchStatus;
+    String reviewStatus;
 }

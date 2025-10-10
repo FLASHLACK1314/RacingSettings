@@ -166,18 +166,27 @@ public class MatchLogic implements MatchService {
         }
         // 3. 映射查询结果到目标DTO对象
         List<GetMatchListDTO> getMatchDtoList = settingsRecords.stream()
-                .map(SettingsMatchDO -> new GetMatchListDTO()
-                        .setMatchUuid(SettingsMatchDO.getMatchUuid())
+                .map(settingsMatchDO -> new GetMatchListDTO()
+                        .setMatchUuid(settingsMatchDO.getMatchUuid())
                         .setGameName(settingsGameDO.getGameName())
                         .setTrackName(settingsTrackDAO.lambdaQuery()
-                                .eq(SettingsTrackDO::getTrackUuid, SettingsMatchDO.getTrackUuid())
+                                .eq(SettingsTrackDO::getTrackUuid, settingsMatchDO.getTrackUuid())
                                 .one().getTrackName())
                         .setCarName(settingsCarDAO.lambdaQuery()
-                                .eq(SettingsCarDO::getCarUuid, SettingsMatchDO.getCarUuid())
+                                .eq(SettingsCarDO::getCarUuid, settingsMatchDO.getCarUuid())
                                 .one().getCarName())
-                        .setMatchName(SettingsMatchDO.getMatchName())
-                        .setMatchTime(String.valueOf(SettingsMatchDO.getMatchTime()))
-                        .setMatchDetails(SettingsMatchDO.getMatchDetails()))
+                        .setMatchName(settingsMatchDO.getMatchName())
+                        .setMatchTime(String.valueOf(settingsMatchDO.getMatchTime()))
+                        .setMatchDetails(settingsMatchDO.getMatchDetails())
+                        .setOrganizerUuid(settingsMatchDO.getOrganizerUuid())
+                        .setRegistrationStartTime(settingsMatchDO.getRegistrationStartTime() == null
+                                ? null
+                                : settingsMatchDO.getRegistrationStartTime().toString())
+                        .setRegistrationEndTime(settingsMatchDO.getRegistrationEndTime() == null
+                                ? null
+                                : settingsMatchDO.getRegistrationEndTime().toString())
+                        .setMatchStatus(settingsMatchDO.getMatchStatus())
+                        .setReviewStatus(settingsMatchDO.getReviewStatus()))
                 .collect(Collectors.toList());
 
         // 4. 封装为自定义分页对象

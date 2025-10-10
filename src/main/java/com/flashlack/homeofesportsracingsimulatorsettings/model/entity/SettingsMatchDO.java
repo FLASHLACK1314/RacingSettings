@@ -24,4 +24,12 @@ public class SettingsMatchDO {
     String matchName;
     Timestamp matchTime;
     String matchDetails;
+    String organizerUuid;
+    Timestamp registrationStartTime;
+    Timestamp registrationEndTime;
+    String matchStatus;
+    String reviewStatus;
+    String reviewComment;
+    String reviewedBy;
+    Timestamp reviewedAt;
 }
