@@ -1,4 +1,4 @@
-package com.flashlack.homeofesportsracingsimulatorsettings.controller.v3;
+package com.flashlack.homeofesportsracingsimulatorsettings.controller.v1;
 
 import com.flashlack.homeofesportsracingsimulatorsettings.service.MailService;
 import com.xlf.utility.BaseResponse;
