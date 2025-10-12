@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@SuppressWarnings("unused")
 public class ChangeEmailVO {
     String newEmail;
     String emailCode;

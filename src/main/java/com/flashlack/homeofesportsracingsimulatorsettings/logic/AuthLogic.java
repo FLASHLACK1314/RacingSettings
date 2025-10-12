@@ -1,6 +1,5 @@
 package com.flashlack.homeofesportsracingsimulatorsettings.logic;
 
-import com.flashlack.homeofesportsracingsimulatorsettings.config.constant.UUIDConstants;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.EmailCodeDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.RoleDAO;
 import com.flashlack.homeofesportsracingsimulatorsettings.dao.UserDAO;
@@ -35,10 +34,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AuthLogic implements AuthService {
 
-    private static final Set<String> SUPPORTED_REGISTER_ROLES = Set.of("USER", "ORGANIZER");
-    private static final Map<String, String> REGISTER_ROLE_KEY_MAP = Map.of(
-            "USER", "USER_ROLE_UUID",
-            "ORGANIZER", "ORGANIZER_ROLE_UUID"
+    private static final Set<String> SUPPORTED_REGISTER_ROLES = Set.of("参赛者", "主办方");
+    private static final Map<String, String> REGISTER_ROLE_ALIAS_MAP = Map.of(
+            "参赛者", "参赛者",
+            "主办方", "主办方"
     );
 
     private final EmailCodeDAO emailCodeDAO;
@@ -99,15 +98,19 @@ public class AuthLogic implements AuthService {
 
     @Override
     public void register(RegisterVO getData) {
-        String roleKey = REGISTER_ROLE_KEY_MAP.getOrDefault(getData.getRoleType(), "USER_ROLE_UUID");
-        String roleUuid = UUIDConstants.getConstant(roleKey);
-        if (roleUuid == null || roleUuid.isEmpty()) {
+        String roleAlias = REGISTER_ROLE_ALIAS_MAP.getOrDefault(getData.getRoleType(), "参赛者");
+
+        // 从数据库查询角色UUID
+        RoleDO roleDO = roleDAO.lambdaQuery()
+                .eq(RoleDO::getRoleAlias, roleAlias)
+                .one();
+        if (roleDO == null) {
             throw new BusinessException("角色配置异常", ErrorCode.OPERATION_ERROR);
         }
 
         UserDO userDO = new UserDO();
         userDO.setUserUuid(UUIDUtils.generateUuid())
-                .setRoleUuid(roleUuid)
+                .setRoleUuid(roleDO.getRoleUuid())
                 .setUserEmail(getData.getUserEmail())
                 .setUserPassword(PasswordUtil.encrypt(getData.getUserPassword()))
                 .setNickName(getData.getNickName());
