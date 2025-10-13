@@ -43,6 +43,8 @@ public class DatabaseInitializer {
         tableSqlMap.put("settings_role", "templates/settings_role.sql");
         tableSqlMap.put("settings_user", "templates/settings_user.sql");
         tableSqlMap.put("email_code", "templates/email_code.sql");
+        tableSqlMap.put("settings_match", "templates/settings_match.sql");
+        tableSqlMap.put("settings_match_registration", "templates/settings_match_registration.sql");
     }
 
     @Bean
